@@ -1,4 +1,22 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## 開発環境のセットアップ
+このプロジェクトでは、チーム全員が全く同じ Node.js 環境で開発できるように **[Volta](https://volta.sh/)** を導入しています。
+「自分の環境だと動かない」というトラブルを防ぐため、以下の手順でセットアップをお願いします。
+
+### Volta のインストール
+
+#### Windows
+1. [Volta 公式サイト](https://volta.sh/) にアクセスします。
+2. **"Download Windows Installer"** をクリックしてダウンロード・インストールしてください。
+3. **【重要】** インストール後、パスを反映させるために**PCを再起動**してください（または開いている VS Code やターミナルをすべて完全に閉じて開き直してください）。
+
+パス反映は恐らく自動で行われますが、もしうまくいかない場合は再起動を試してください。
+
+#### Mac / WSL (Linux) 
+ターミナルで以下のコマンドを実行してください。
+
+```bash
+curl https://get.volta.sh | bash
+```
 
 ## Getting Started
 
