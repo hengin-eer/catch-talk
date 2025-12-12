@@ -8,9 +8,10 @@
     "start": "next start",
     "lint": "biome check",
     "format": "biome format --write",
-    "prepare": "husky"
+    "prepare": "husky install"
   },
   "dependencies": {
+    "jotai": "^2.16.0",
     "next": "16.0.10",
     "react": "19.2.1",
     "react-dom": "19.2.1"
