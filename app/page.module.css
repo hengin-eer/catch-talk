@@ -112,8 +112,8 @@
   padding: clamp(20px, 3vw, 36px);
   border-radius: 32px;
   background: #FFF8EA;
-  border: 2px solid #bE987B;
-  box-shadow: 0 24px 60px #bE987B;
+  border: 2px solid #BE987B;
+  box-shadow: 0 24px 60px #BE987B;
   display: flex;
   flex-direction: column;
   gap: clamp(20px, 3vw, 32px);

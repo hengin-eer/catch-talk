@@ -44,6 +44,9 @@ async function createLevelMonitor(
   const AudioCtx =
     window.AudioContext ||
     (window as LegacyAudioContextWindow).webkitAudioContext;
+  if (typeof AudioCtx !== "function") {
+    throw new Error("Web Audio API is not supported in this environment.");
+  }
   const audioCtx = new AudioCtx();
   const source = audioCtx.createMediaStreamSource(stream);
   const analyser = audioCtx.createAnalyser();
@@ -51,7 +54,7 @@ async function createLevelMonitor(
   source.connect(analyser);
 
   const buffer = new Uint8Array(analyser.fftSize);
-  let rafId: number;
+  let rafId: number | null = null;
 
   const pump = () => {
     analyser.getByteTimeDomainData(buffer);
@@ -68,13 +71,15 @@ async function createLevelMonitor(
   pump();
 
   return () => {
-    cancelAnimationFrame(rafId);
+    if (rafId !== null) cancelAnimationFrame(rafId);
     source.disconnect();
     analyser.disconnect();
     for (const track of stream.getTracks()) {
       track.stop();
     }
-    audioCtx.close().catch(() => {});
+    audioCtx.close().catch((err) => {
+      console.error("Error closing audio context:", err);
+    });
     onLevel(0);
   };
 }
@@ -91,29 +96,38 @@ export default function Home() {
     if (!navigator.mediaDevices?.enumerateDevices) return;
 
     let stop = false;
+    let inflight: Promise<void> | null = null;
 
     const refreshDevices = async () => {
-      try {
-        await navigator.mediaDevices.getUserMedia({ audio: true });
-        const devs = (await navigator.mediaDevices.enumerateDevices()).filter(
-          (d) => d.kind === "audioinput",
-        );
-        if (stop) return;
-        setDevices(devs);
-        setMicDevice((prev) => {
-          const mic1Exists =
-            prev.mic1 && devs.some((d) => d.deviceId === prev.mic1);
-          const mic2Exists =
-            prev.mic2 && devs.some((d) => d.deviceId === prev.mic2);
+      if (inflight) return inflight;
 
-          return {
-            mic1: mic1Exists ? prev.mic1 : undefined,
-            mic2: mic2Exists ? prev.mic2 : undefined,
-          };
-        });
-      } catch (err) {
-        console.error("mic enumerate failed", err);
-      }
+      inflight = (async () => {
+        try {
+          await navigator.mediaDevices.getUserMedia({ audio: true });
+          const devs = (await navigator.mediaDevices.enumerateDevices()).filter(
+            (d) => d.kind === "audioinput",
+          );
+          if (stop) return;
+          setDevices(devs);
+          setMicDevice((prev) => {
+            const mic1Exists =
+              prev.mic1 && devs.some((d) => d.deviceId === prev.mic1);
+            const mic2Exists =
+              prev.mic2 && devs.some((d) => d.deviceId === prev.mic2);
+
+            return {
+              mic1: mic1Exists ? prev.mic1 : undefined,
+              mic2: mic2Exists ? prev.mic2 : undefined,
+            };
+          });
+        } catch (err) {
+          console.error("mic enumerate failed", err);
+        }
+      })().finally(() => {
+        inflight = null;
+      });
+
+      return inflight;
     };
 
     refreshDevices();
@@ -178,6 +192,7 @@ export default function Home() {
     };
   }, [micDevice.mic2]);
 
+  // TODO: これは取りあえずのAlertなので、後でちゃんとしたUIにする
   const handleStart = () => {
     if (!micDevice.mic1 || !micDevice.mic2) {
       alert("マイクを２本選んでからスタートしてね");
@@ -248,8 +263,11 @@ export default function Home() {
                 </div>
                 <div
                   className={styles.levelMeter}
-                  role="img"
+                  role="progressbar"
                   aria-label={`${label} current input level`}
+                  aria-valuenow={index === 0 ? level1 : level2}
+                  aria-valuemin={0}
+                  aria-valuemax={1}
                 >
                   <span
                     style={{
