@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Noise Reduction Test Bench</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .control-group { margin-bottom: 15px; border: 1px solid #ddd; padding: 15px; border-radius: 8px; }
+        label { display: inline-block; width: 150px; }
+        canvas { width: 100%; height: 150px; background: #222; border-radius: 4px; margin-bottom: 20px; }
+        .value-display { font-weight: bold; color: #007bff; margin-left: 10px; }
+        button { padding: 10px 20px; cursor: pointer; font-size: 1.1em; }
+        .warning { color: red; font-size: 0.9em; margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🎤 ノイズ除去モジュール テスト</h1>
+
+    <canvas id="oscilloscope"></canvas>
+
+    <div class="control-group">
+        <button id="startBtn">マイク入力開始</button>
+        <button id="stopBtn" disabled>停止</button>
+
+        <div style="margin-top: 15px;">
+            <input type="checkbox" id="monitorCheckbox">
+            <label for="monitorCheckbox" style="width: auto;">処理後の音を聴く (Monitor)</label>
+            <div class="warning">※ ハウリング防止のため、必ずイヤホン/ヘッドフォンを使用してください。</div>
+        </div>
+    </div>
+
+    <div class="control-group">
+        <h3>パラメータ調整</h3>
+
+        <div>
+            <label>Gate Threshold:</label>
+            <input type="range" id="gateSlider" min="0" max="0.1" step="0.001" value="0.02">
+            <span id="gateVal" class="value-display">0.02</span>
+        </div>
+        <p><small>※ 波形が真っ直ぐになるギリギリの値を狙ってください</small></p>
+
+        <div>
+            <label>High Pass (Hz):</label>
+            <input type="range" id="hpfSlider" min="0" max="500" step="10" value="150">
+            <span id="hpfVal" class="value-display">150</span>
+        </div>
+
+        <div>
+            <label>Low Pass (Hz):</label>
+            <input type="range" id="lpfSlider" min="1000" max="20000" step="100" value="8000">
+            <span id="lpfVal" class="value-display">8000</span>
+        </div>
+    </div>
+
+    <script type="module" src="./noiseReduction.test.ts"></script>
+</body>
+</html>
