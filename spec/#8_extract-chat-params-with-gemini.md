@@ -11,8 +11,22 @@
 ## インターフェース設計
 
 ### Input
-- `text`: string (解析対象の発話テキスト)
-- `history`: string[] (オプション: 直近の会話履歴数件。文脈理解用)
+以下のオブジェクトの配列を受け取る。
+配列の**最後の要素**を解析対象とし、それ以前の要素は文脈（Context）として利用する。
+
+```ts
+type Speaker = "player1" | "player2";
+
+type Message = {
+  speaker: Speaker;
+  text: string;
+}
+
+// Server Actionの引数
+messages: Message[]
+```
+
+`text`がオブジェクト配列のため、これをパースして会話履歴の変数を生成しても良いか？
 
 ### Output (JSON Schema)
 ```json
@@ -33,12 +47,13 @@
 ## タスク
 - [x] パッケージ追加
   - [x] `npm install @google/generative-ai`
-- [x] Gemini APIクライアント実装 (Server Actions)
+- [ ] Gemini APIクライアント実装 (Server Actions)
   - [x] `gemini-2.5-flash` モデルの初期化
-  - [x] プロンプトエンジニアリング (System Instructionの調整)
+  - [ ] **入力インターフェースの変更対応 (`ChatMessage[]`)**
+  - [ ] **プロンプトエンジニアリング (Speaker情報の反映)**
   - [x] JSON Schemaの定義と適用
-  - [x] エラーハンドリング (API制限、不適切コンテンツ判定など)
-- [x] テストコードの実装
+  - [x] エラーハンドリング
+- [ ] テストコードの実装
   - [x] Vitestの導入
-  - [x] 統合テストの実装 (`test/actions/analyzeChat.test.ts`)
+  - [ ] **統合テストの修正 (入力形式の変更)**
   - [x] CIでの実行設定 (必要であれば)
