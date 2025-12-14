@@ -1,10 +1,8 @@
-import { loadEnvConfig } from "@next/env";
+import { loadEnv } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { defineConfig } from "vitest/config";
 
-loadEnvConfig(process.cwd());
-
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [tsconfigPaths()],
   test: {
     environment: "node",
@@ -17,5 +15,6 @@ export default defineConfig({
       // TODO: DOM依存のテストをサポートする方法を検討
     ],
     testTimeout: 20000, // API calls might take time
+    env: loadEnv(mode, process.cwd(), ""),
   },
-});
+}));
