@@ -1,6 +1,6 @@
 ## 概要
 - STTで得たテキストから会話成分を抽出するAPIの実装
-- Gemini API (`gemini-1.5-flash`) を利用する
+- Gemini API (`gemini-2.5-flash`) を利用する
   - リアルタイム性を重視し、軽量モデルを採用
 - 以下の2軸で会話成分を抽出する。いずれも連続値
   - テンションの高さ (-1.0: 低い/沈静 ~ 1.0: 高い/興奮)
@@ -26,7 +26,7 @@
 - [ ] パッケージ追加
   - [ ] `npm install @google/generative-ai`
 - [ ] Gemini APIクライアント実装 (Server Actions)
-  - [ ] `gemini-1.5-flash` モデルの初期化
+  - [ ] `gemini-2.5-flash` モデルの初期化
   - [ ] プロンプトエンジニアリング (System Instructionの調整)
   - [ ] JSON Schemaの定義と適用
   - [ ] エラーハンドリング (API制限、不適切コンテンツ判定など)
