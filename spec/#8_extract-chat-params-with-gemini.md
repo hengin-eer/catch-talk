@@ -22,13 +22,23 @@
 }
 ```
 
+## テスト方針
+- **単体テスト (Unit Test)**
+  - 純粋なロジック（プロンプト生成など、外部依存のない部分）は、実装ファイルと同じディレクトリに `*.test.ts` として配置する。
+- **統合テスト (Integration Test)**
+  - 外部API (Gemini API) や Server Actions を含むテストは、`test/` ディレクトリ配下に配置する。
+  - 例: `test/actions/analyzeChat.test.ts`
+  - 実行には `.env.local` に `GEMINI_API_KEY` が必要。
+
 ## タスク
-- [ ] パッケージ追加
-  - [ ] `npm install @google/generative-ai`
-- [ ] Gemini APIクライアント実装 (Server Actions)
-  - [ ] `gemini-2.5-flash` モデルの初期化
-  - [ ] プロンプトエンジニアリング (System Instructionの調整)
-  - [ ] JSON Schemaの定義と適用
-  - [ ] エラーハンドリング (API制限、不適切コンテンツ判定など)
-- [ ] テストコードの実装
-  - [ ] 典型的な発話パターンでのスコア検証
+- [x] パッケージ追加
+  - [x] `npm install @google/generative-ai`
+- [x] Gemini APIクライアント実装 (Server Actions)
+  - [x] `gemini-2.5-flash` モデルの初期化
+  - [x] プロンプトエンジニアリング (System Instructionの調整)
+  - [x] JSON Schemaの定義と適用
+  - [x] エラーハンドリング (API制限、不適切コンテンツ判定など)
+- [x] テストコードの実装
+  - [x] Vitestの導入
+  - [x] 統合テストの実装 (`test/actions/analyzeChat.test.ts`)
+  - [x] CIでの実行設定 (必要であれば)
