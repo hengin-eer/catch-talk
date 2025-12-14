@@ -13,24 +13,26 @@ export type TextArrayType = {
 };
 
 export type ruleResponseType = {
-  spead: number; // 話すスピード
-  is_quiet: boolean; // そのターンの前に沈黙が検出されたか
-  talk_length: number; // そのターンの発話長さ (ミリ秒)
+  spead: number | null; // 話すスピード
+  is_quiet: boolean | null; // そのターンの前に沈黙が検出されたか
+  talk_length: number | null; // そのターンの発話長さ (ミリ秒)
+  is_collision: boolean | null; // 相手と話が被ったか
 };
 
 export type gptResponseType = {
-  type: string; // 球種 // TODO: 特定の文字列のみにする
-  course: string; // コース // TODO: 特定の文字列のみにする
+  type: string | null; // 球種 // TODO: 特定の文字列のみにする
+  course: string | null; // コース // TODO: 特定の文字列のみにする
 };
 
 export type pitchChartType = {
   // ruleResponse
-  spead: number;
-  is_quiet: boolean;
-  talk_length: number;
+  spead: number | null;
+  is_quiet: boolean | null;
+  talk_length: number | null;
+  is_collision: boolean | null;
   // gptResponse
-  type: string;
-  course: string;
+  type: string | null;
+  course: string | null;
 };
 
 // jotaiの状態管理用
