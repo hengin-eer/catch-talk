@@ -1,5 +1,8 @@
+import { loadEnvConfig } from "@next/env";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { defineConfig } from "vitest/config";
+
+loadEnvConfig(process.cwd());
 
 export default defineConfig({
   plugins: [tsconfigPaths()],
@@ -14,6 +17,5 @@ export default defineConfig({
       // TODO: DOM依存のテストをサポートする方法を検討
     ],
     testTimeout: 20000, // API calls might take time
-    setupFiles: ["./test/setup.ts"],
   },
 });
