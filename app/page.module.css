@@ -8,7 +8,8 @@
   overflow: hidden;
   background-color: #cfe3ff;
   color: #2c1608;
-  font-family: var(--font-playful), var(--font-geist-sans), sans-serif; /*フォントはとりあえず*/
+  font-family:
+    var(--font-playful), var(--font-geist-sans), sans-serif; /*フォントはとりあえず*/
 }
 
 .page::before,
@@ -20,12 +21,16 @@
 }
 
 .page::before {
-  background: url("/bg-image.png") center/cover no-repeat;
+  background: url("/bg-image.png") center / cover no-repeat;
   filter: saturate(1.1);
 }
 
 .page::after {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.2));
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.5),
+    rgba(255, 255, 255, 0.2)
+  );
 }
 
 .main {
@@ -85,12 +90,12 @@
   left: 18%;
   background: repeating-linear-gradient(
     90deg,
-    #7A4F29 0px,
-    #7A4F29 4px,
-    #C78041 4px,
-    #C78041 16px,
-    #7A4F29 16px,
-    #7A4F29 20px
+    #7a4f29 0px,
+    #7a4f29 4px,
+    #c78041 4px,
+    #c78041 16px,
+    #7a4f29 16px,
+    #7a4f29 20px
   );
 }
 
@@ -98,12 +103,12 @@
   right: 18%;
   background: repeating-linear-gradient(
     90deg,
-    #7A4F29 0px,
-    #7A4F29 4px,
-    #A65B2F 4px,
-    #A65B2F 16px,
-    #7A4F29 16px,
-    #7A4F29 20px
+    #7a4f29 0px,
+    #7a4f29 4px,
+    #a65b2f 4px,
+    #a65b2f 16px,
+    #7a4f29 16px,
+    #7a4f29 20px
   );
 }
 
@@ -111,9 +116,9 @@
   width: min(880px, 100%);
   padding: clamp(20px, 3vw, 36px);
   border-radius: 32px;
-  background: #FFF8EA;
-  border: 2px solid #BE987B;
-  box-shadow: 0 24px 60px #BE987B;
+  background: #fff8ea;
+  border: 2px solid #be987b;
+  box-shadow: 0 24px 60px #be987b;
   display: flex;
   flex-direction: column;
   gap: clamp(20px, 3vw, 32px);
@@ -189,7 +194,7 @@
 .levelMeter span {
   display: block;
   height: 100%;
-  background: #FC801B;
+  background: #fc801b;
   border-radius: inherit;
 }
 
@@ -206,7 +211,9 @@
   color: #4b270c;
   box-shadow: 0 16px 24px rgba(87, 40, 11, 0.35);
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .startButton:hover {

@@ -5,6 +5,7 @@ export type MsgPacketType = {
   duration_ms: number; // 発話していた時間 (ミリ秒)
   volume: number; // 発話中の音量 (0.0 - 1.0)
   text: string; // 音声認識されたテキスト
+  is_collision: boolean; // 相手と話が被ったか
 };
 
 export type TextArrayType = {
