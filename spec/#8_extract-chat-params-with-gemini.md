@@ -26,7 +26,11 @@ type Message = {
 messages: Message[]
 ```
 
-`text`がオブジェクト配列のため、これをパースして会話履歴の変数を生成しても良いか？
+**実装方針:**
+受け取った `messages` 配列を以下のように処理する。
+1. 配列の最後の要素を `targetMessage` (解析対象) とする。
+2. それ以外の要素を `historyMessages` (文脈) とする。
+3. プロンプト内で `historyMessages` を "Context" として、`targetMessage` を "Input" として展開する。
 
 ### Output (JSON Schema)
 ```json
