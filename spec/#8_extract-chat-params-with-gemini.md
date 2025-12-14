@@ -51,13 +51,13 @@ messages: Message[]
 ## タスク
 - [x] パッケージ追加
   - [x] `npm install @google/generative-ai`
-- [ ] Gemini APIクライアント実装 (Server Actions)
+- [x] Gemini APIクライアント実装 (Server Actions)
   - [x] `gemini-2.5-flash` モデルの初期化
-  - [ ] **入力インターフェースの変更対応 (`ChatMessage[]`)**
-  - [ ] **プロンプトエンジニアリング (Speaker情報の反映)**
+  - [x] **入力インターフェースの変更対応 (`Message[]`)**
+  - [x] **プロンプトエンジニアリング (Speaker情報の反映)**
   - [x] JSON Schemaの定義と適用
   - [x] エラーハンドリング
-- [ ] テストコードの実装
+- [x] テストコードの実装
   - [x] Vitestの導入
-  - [ ] **統合テストの修正 (入力形式の変更)**
+  - [x] **統合テストの修正 (入力形式の変更)**
   - [x] CIでの実行設定 (必要であれば)
