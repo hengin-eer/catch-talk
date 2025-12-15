@@ -52,7 +52,7 @@ export async function POST(req: Request) {
 
     const config: Record<string, unknown> = {
       languageCode: "ja-JP",
-      model: "latest_long",
+      model: "latest_long", // NOTE: レスポンス速度と精度のバランスを考慮して選ぼう
       enableAutomaticPunctuation: true,
     };
 
