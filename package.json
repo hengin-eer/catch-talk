@@ -13,6 +13,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@google-cloud/speech": "^7.2.1",
     "@google/generative-ai": "^0.24.1",
     "jotai": "^2.16.0",
     "next": "16.0.10",
