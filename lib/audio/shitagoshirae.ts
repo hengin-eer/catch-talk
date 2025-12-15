@@ -6,10 +6,10 @@ type StartOptions = {
   micDeviceIdBySpeaker: Record<Speaker, string>;
   startThreshold?: number; // default 0.5
   endThreshold?: number; // default 0.3
-  hangoverMs?: number; // default 500
-  minSpeechMs?: number; // default 150
-  maxSpeechMs?: number; // default 10000
-  collisionHoldMs?: number; // default 500
+  hangover_ms?: number; // default 500
+  minSpeech_ms?: number; // default 150
+  maxSpeech_ms?: number; // default 10000
+  collisionHold_ms?: number; // default 500
   onPacket: (packet: MsgPacketType) => void;
   onRms?: (speaker: Speaker, rms01: number) => void; // 0-1に正規化したい場合は呼び出し側で
 };
@@ -23,12 +23,12 @@ type PerSpeakerRuntime = {
   dest: MediaStreamAudioDestinationNode;
   recorder: MediaRecorder;
   recording: boolean;
-  recordingStartAtMs: number | null;
+  recordingStartAt_ms: number | null;
   shouldDiscard: boolean;
   collisionFlagForThisSegment: boolean;
   chunks: Blob[];
   vadSpeaking: boolean;
-  vadStartAtMs: number | null;
+  vadStartAt_ms: number | null;
 };
 
 function pickMimeType(): string | undefined {
@@ -76,10 +76,10 @@ export async function startShitagoshirae(
 ): Promise<() => void> {
   const startThreshold = opts.startThreshold ?? 0.5;
   const endThreshold = opts.endThreshold ?? 0.3;
-  const hangoverMs = opts.hangoverMs ?? 500;
-  const minSpeechMs = opts.minSpeechMs ?? 150;
-  const maxSpeechMs = opts.maxSpeechMs ?? 10000;
-  const collisionHoldMs = opts.collisionHoldMs ?? 500;
+  const hangover_ms = opts.hangover_ms ?? 500;
+  const minSpeech_ms = opts.minSpeech_ms ?? 150;
+  const maxSpeech_ms = opts.maxSpeech_ms ?? 10000;
+  const collisionHold_ms = opts.collisionHold_ms ?? 500;
 
   const mimeType = pickMimeType();
 
@@ -105,9 +105,9 @@ export async function startShitagoshirae(
       processorOptions: {
         startThreshold,
         endThreshold,
-        hangoverMs,
-        minSpeechMs,
-        maxSpeechMs,
+        hangoverMs: hangover_ms,
+        minSpeechMs: minSpeech_ms,
+        maxSpeechMs: maxSpeech_ms,
       },
     });
 
@@ -130,12 +130,12 @@ export async function startShitagoshirae(
       dest,
       recorder,
       recording: false,
-      recordingStartAtMs: null,
+      recordingStartAt_ms: null,
       shouldDiscard: false,
       collisionFlagForThisSegment: false,
       chunks: [],
       vadSpeaking: false,
-      vadStartAtMs: null,
+      vadStartAt_ms: null,
     };
 
     recorder.ondataavailable = (e) => {
@@ -143,9 +143,9 @@ export async function startShitagoshirae(
     };
 
     recorder.onstop = async () => {
-      const startedAt = rt.recordingStartAtMs;
+      const startedAt = rt.recordingStartAt_ms;
       rt.recording = false;
-      rt.recordingStartAtMs = null;
+      rt.recordingStartAt_ms = null;
 
       const blob = new Blob(rt.chunks, {
         type: recorder.mimeType || "audio/webm",
@@ -221,8 +221,8 @@ export async function startShitagoshirae(
           // 0.5s経ってもまだ被ってるならcollision確定
           if (!(p1.vadSpeaking && p2.vadSpeaking)) return;
 
-          const t1 = p1.vadStartAtMs ?? 0;
-          const t2 = p2.vadStartAtMs ?? 0;
+          const t1 = p1.vadStartAt_ms ?? 0;
+          const t2 = p2.vadStartAt_ms ?? 0;
 
           const earlier = t1 <= t2 ? p1 : p2;
           const later = t1 <= t2 ? p2 : p1;
@@ -240,7 +240,7 @@ export async function startShitagoshirae(
 
           // 後に始まった方は継続 + collisionフラグ
           later.collisionFlagForThisSegment = true;
-        }, collisionHoldMs);
+        }, collisionHold_ms);
       }
     } else {
       clearOverlapTimer();
@@ -259,7 +259,7 @@ export async function startShitagoshirae(
 
       if (msg.type === "speech_start") {
         rt.vadSpeaking = true;
-        rt.vadStartAtMs = Date.now();
+        rt.vadStartAt_ms = Date.now();
 
         rt.shouldDiscard = false;
         rt.collisionFlagForThisSegment = false;
@@ -267,7 +267,7 @@ export async function startShitagoshirae(
         if (!rt.recording && rt.recorder.state !== "recording") {
           rt.chunks = [];
           rt.recording = true;
-          rt.recordingStartAtMs = rt.vadStartAtMs;
+          rt.recordingStartAt_ms = rt.vadStartAt_ms;
           rt.recorder.start();
         }
 
@@ -277,7 +277,7 @@ export async function startShitagoshirae(
 
       if (msg.type === "speech_end") {
         rt.vadSpeaking = false;
-        rt.vadStartAtMs = null;
+        rt.vadStartAt_ms = null;
 
         if (typeof msg.avgRms === "number") {
           // RMSは理論上0-1を想定（worklet側は未正規化なので環境次第。要調整）
