@@ -8,10 +8,13 @@
     "start": "next start",
     "lint": "biome check",
     "format": "biome format --write",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "prepare": "husky"
   },
   "dependencies": {
     "@google-cloud/speech": "^7.2.1",
+    "@google/generative-ai": "^0.24.1",
     "jotai": "^2.16.0",
     "next": "16.0.10",
     "react": "19.2.1",
@@ -25,7 +28,10 @@
     "babel-plugin-react-compiler": "1.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vite": "^7.2.7",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^4.0.15"
   },
   "volta": {
     "node": "22.12.0"
