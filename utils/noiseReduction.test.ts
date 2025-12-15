@@ -135,7 +135,7 @@ function updateMonitorConnection() {
     // 切断
     try {
       analyser.disconnect(audioCtx.destination);
-    } catch (e) {
+    } catch (_e) {
       /* 未接続時のエラー無視 */
     }
   }
