@@ -1,4 +1,5 @@
 
+## VAD処理の仕組み
 ```mermaid
 graph TB
     A[待機中] -->|音量 > 閾値| B(録音開始 & timestamp記録)
@@ -8,6 +9,7 @@ graph TB
     D --> E[オブジェクト生成 & 送信]
 ```
 
+## 全体DFD
 ```mermaid
 graph TB
     %% スタイル定義

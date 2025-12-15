@@ -1,7 +1,7 @@
 export type MsgPacketType = {
   uuid: string; // UUID
   speaker: "player1" | "player2";
-  start_at: number; // 発話開始時刻 (Unix time)
+  start_at: Date; // 発話開始時刻 (Unix time)
   duration_ms: number; // 発話していた時間 (ミリ秒)
   volume: number; // 発話中の音量 (0.0 - 1.0)
   text: string; // 音声認識されたテキスト
