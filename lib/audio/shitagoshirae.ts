@@ -1,5 +1,3 @@
-"use client";
-
 import type { MsgPacketType } from "@/types/game";
 
 type Speaker = "player1" | "player2";
