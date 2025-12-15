@@ -33,8 +33,8 @@ export default function TalkPage() {
           micDeviceIdBySpeaker: { player1: mic1, player2: mic2 },
           startThreshold: 0.3,
           endThreshold: 0.01,
-          hangoverMs: 500,
-          collisionHoldMs: 500,
+          hangover_ms: 500,
+          collisionHold_ms: 500,
           onPacket: (p) => {
             if (cancelled) return;
             setPackets((prev) => [p, ...prev].slice(0, 50));
