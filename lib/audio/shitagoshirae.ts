@@ -180,7 +180,7 @@ export async function startShitagoshirae(
       const packet: MsgPacketType = {
         uuid: crypto.randomUUID(),
         speaker: rt.speaker,
-        start_at: startAt,
+        start_at: new Date(startAt),
         duration_ms,
         volume: rtLastAvgRms.get(rt.speaker) ?? 0,
         text,

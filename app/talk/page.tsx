@@ -94,9 +94,9 @@ export default function TalkPage() {
           {packets.map((p) => (
             <li key={p.uuid} style={{ marginBottom: 8 }}>
               <div style={{ fontSize: 12, opacity: 0.8 }}>
-                {p.speaker} / {p.duration_ms}ms / vol={p.volume.toFixed(2)} /
-                collision=
-                {String(p.is_collision)}
+                {p.start_at.toLocaleTimeString("ja-JP", { hour12: false })} /{" "}
+                {p.speaker} / {p.duration_ms}ms / vol=
+                {p.volume.toFixed(2)} / collision={String(p.is_collision)}
               </div>
               <div>{p.text}</div>
             </li>
