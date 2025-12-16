@@ -16,7 +16,7 @@ export type RuleBasedResult = {
 };
 
 export type GptBasedResult = {
-  type: PitchType; // 変化球
+  pitchType: PitchType; // 変化球
   tension: number; // 会話のテンション -1.0（低い）〜1.0（高い）
   communicationStyle: number; // コミュニケーションスタイル -1.0（議論・解決志向）〜1.0（共感・受容志向）
 };
