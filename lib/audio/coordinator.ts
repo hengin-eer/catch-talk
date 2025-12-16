@@ -29,7 +29,6 @@ export class ConversationCoordinator {
   async start() {
     this.ctx = new AudioContext({
       latencyHint: "interactive",
-      sampleRate: 16000, // STT推奨
     });
 
     if (this.ctx.state === "suspended") {
