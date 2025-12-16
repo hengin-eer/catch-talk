@@ -1,16 +1,9 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect } from "vitest";
 import { analyzeChat, type Message } from "@/app/actions/analyzeChat";
+import { getTestRunner } from "@/test/test-utils";
 
 describe("analyzeChat Pitch Type Analysis", () => {
-  // Skip tests if API key is not set
-  const apiKey = process.env.GEMINI_API_KEY;
-  const runTest = apiKey ? it : it.skip;
-
-  if (!apiKey) {
-    console.warn(
-      "GEMINI_API_KEY not found in .env.local. Skipping pitch type integration tests.",
-    );
-  }
+  const runTest = getTestRunner();
 
   runTest(
     "should detect 'straight' pitch for clear, direct communication",
