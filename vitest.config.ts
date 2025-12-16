@@ -15,6 +15,7 @@ export default defineConfig(({ mode }) => ({
       "**/dist/**",
       "**/.next/**",
       "lib/audio/noiseReduction.test.ts", // DOMに依存しているためスキップ
+      "test/test-utils.ts", // テストユーティリティなので除外
       // TODO: DOM依存のテストをサポートする方法を検討
     ],
     testTimeout: 20000, // API calls might take time
