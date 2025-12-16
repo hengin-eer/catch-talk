@@ -1,7 +1,6 @@
-import { SpeechClient } from "@google-cloud/speech";
-import { NextResponse } from "next/server";
+"use server";
 
-export const runtime = "nodejs";
+import { SpeechClient } from "@google-cloud/speech";
 
 function createSpeechClient() {
   const raw = process.env.GOOGLE_SA_KEY;
@@ -29,16 +28,17 @@ function inferEncoding(mime: string | undefined) {
   return undefined;
 }
 
-export async function POST(req: Request) {
+export async function transcribe(
+  formData: FormData,
+): Promise<{ text: string; error?: string }> {
   try {
-    const form = await req.formData();
-    const audio = form.get("audio");
+    const audio = formData.get("audio");
 
     if (!(audio instanceof File)) {
-      return NextResponse.json({ text: "failed STT" }, { status: 400 });
+      return { text: "", error: "No audio file provided" };
     }
 
-    const srRaw = form.get("sample_rate_hz");
+    const srRaw = formData.get("sample_rate_hz");
     const sampleRateHertz =
       typeof srRaw === "string" && /^\d+$/.test(srRaw)
         ? Number(srRaw)
@@ -52,7 +52,7 @@ export async function POST(req: Request) {
 
     const config: Record<string, unknown> = {
       languageCode: "ja-JP",
-      model: "latest_long", // NOTE: レスポンス速度と精度のバランスを考慮して選ぼう
+      model: "latest_long",
       enableAutomaticPunctuation: true,
     };
 
@@ -60,11 +60,7 @@ export async function POST(req: Request) {
 
     const isOpus = encoding === "WEBM_OPUS" || encoding === "OGG_OPUS";
 
-    // Opusは sampleRateHertz 指定で事故ることがあるので基本は付けない
     if (!isOpus && sampleRateHertz) config.sampleRateHertz = sampleRateHertz;
-
-    // 今の録音（MediaStreamDestination経由）は2chになっているため合わせる
-    // ※将来的にクライアント側でmono化したらここも1 or 未指定に変更する
     if (isOpus) config.audioChannelCount = 2;
 
     const [res] = await client.recognize({
@@ -76,11 +72,11 @@ export async function POST(req: Request) {
       res.results
         ?.map((r) => r.alternatives?.[0]?.transcript ?? "")
         .join("")
-        .trim() || "failed STT";
+        .trim() || "";
 
-    return NextResponse.json({ text });
+    return { text };
   } catch (err) {
-    console.error("[/api/stt] error", err);
-    return NextResponse.json({ text: "failed STT" }, { status: 500 });
+    console.error("[transcribe] error", err);
+    return { text: "", error: "Failed to transcribe" };
   }
 }
