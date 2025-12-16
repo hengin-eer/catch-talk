@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { analyzeChat, type Message } from "../../app/actions/analyzeChat";
+import { analyzeChat, type Message } from "@/app/actions/analyzeChat";
 
 describe("analyzeChat Server Action", () => {
   // Skip tests if API key is not set

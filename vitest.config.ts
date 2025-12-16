@@ -6,6 +6,9 @@ export default defineConfig(({ mode }) => ({
   plugins: [tsconfigPaths()],
   test: {
     environment: "node",
+    alias: {
+      "@/": `${__dirname}/`,
+    },
     include: ["**/*.test.ts", "**/*.test.tsx"],
     exclude: [
       "**/node_modules/**",
