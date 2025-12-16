@@ -70,4 +70,4 @@ export type PitchType = "straight" | "slider" | "curve" | "nuckle" | "fork";
 4. プロンプトに会話履歴と、パラメータ抽出ルールを渡してGeminiに投げる
 5. Geminiののレスポンスから、パラメータと変化球のキー名を抽出し、jotaiに保存する
 
-5.でのjotaiに保存する返り値は既存の`ChatAnalysisResult`に変わって`game.ts`にある`GptBasedResul`型とする。
+5.でのjotaiに保存する返り値は既存の`ChatAnalysisResult`に変わって`game.ts`にある`GptBasedResult`型とする。
