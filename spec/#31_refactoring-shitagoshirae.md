@@ -12,7 +12,7 @@
     *   ストリームのクリーンアップ（トラック停止）。
 
 ### 2.2. NoiseReductionProcessor (ノイズ除去)
-*   **責務**: noiseReduction.ts をラップし、Web Audio API ノードチェーンとして機能させる。
+*   **責務**: noiseReduction.ts を `lib/audio/noiseReduction.ts` に移動し、Web Audio API ノードチェーンとして機能させる。
 *   **機能**:
     *   HPF (High Pass Filter), LPF (Low Pass Filter) の適用。
     *   ノイズゲート処理（無音時のフロアノイズカット）。
@@ -39,7 +39,7 @@
 *   **変更点**: 従来の `fetch('/api/stt')` から、Server Actions の呼び出しに変更する。
 
 ### 2.6. ConversationCoordinator (全体制御)
-*   **責務**: 上記モジュールを統括し、`MsgPacketType` を生成する。
+*   **責務**: 上記モジュールを統括し、`MsgPacket` を生成する。
 *   **機能**:
     *   Player1, Player2 のインスタンス管理。
     *   **衝突判定 (Collision Detection)**: 双方の発話タイミングを監視し、重複時の破棄・フラグ付与を行う。
@@ -58,11 +58,11 @@
 ## 4. 戻り値と状態管理 (Jotai との分離)
 ### 4.1. 方針
 *   `shitagoshirae` (または `ConversationCoordinator`) は **Jotai に依存しない**。
-*   `MsgPacketType` は「状態」ではなく「イベントデータ」として扱う。
+*   `MsgPacket` は「状態」ではなく「イベントデータ」として扱う。
 
 ### 4.2. データフロー設計
 1.  **Coordinator (Producer)**:
-    *   パケット生成時に `onPacket(packet: MsgPacketType)` をコールバックするのみ。
+    *   パケット生成時に `onPacket(packet: MsgPacket)` をコールバックするのみ。
     *   戻り値としてパケットを返すことはしない（非同期イベントのため）。
 
 2.  **React Hook / Consumer**:
@@ -77,7 +77,7 @@
 *   **ノイズ除去の負荷**: `ScriptProcessorNode` を使用しているため、メインスレッドへの負荷に注意する。将来的に `AudioWorklet` 化を検討するが、まずは現状のモジュールを組み込む。
 *   **レイテンシ**: VAD の `speech_end` 検知から STT リクエスト送信までのオーバーヘッドを最小化する。
 
-### 5.2. パラメータ取得 (`MsgPacketType` へのマッピング)
+### 5.2. パラメータ取得 (`MsgPacket` へのマッピング)
 *   **volume**: VADProcessor から通知される RMS の最大値または平均値を使用。
 *   **duration_ms**: VAD の `start` と `end` のタイムスタンプ差分から算出。
 *   **text**: Server Actions の結果を使用。
@@ -87,7 +87,7 @@
 ```
 lib/audio/
 ├── capture.ts       # AudioCapture
-├── noise.ts         # NoiseReductionProcessor (Wrapper of utils/noiseReduction.ts)
+├── noiseReduction.ts # NoiseReductionProcessor (Moved from utils/)
 ├── vad.ts           # VADProcessor
 ├── recorder.ts      # AudioRecorder
 ├── stt.ts           # STTClient (Server Action wrapper)
