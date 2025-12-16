@@ -1,15 +1,19 @@
+import path from "path";
+import { fileURLToPath } from "url";
 import { loadEnv } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig(({ mode }) => ({
   plugins: [tsconfigPaths()],
+  resolve: {
+    alias: {
+      // "@/": `${__dirname}/`,
+      "@": path.dirname(fileURLToPath(import.meta.url)),
+    },
+  },
   test: {
     environment: "node",
-    alias: {
-      "@/": `${__dirname}/`,
-    },
-    include: ["**/*.test.ts", "**/*.test.tsx"],
     exclude: [
       "**/node_modules/**",
       "**/dist/**",
