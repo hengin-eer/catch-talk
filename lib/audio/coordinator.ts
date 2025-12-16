@@ -61,11 +61,22 @@ export class ConversationCoordinator {
 
     const recorder = new MediaStreamRecorder(this.ctx, this.config.recorder);
 
-    // Connect: Source -> NoiseReduction -> VAD -> Recorder
+    // DelayNode for look-ahead recording (prevent cutting off the beginning of speech)
+    const delayNode = this.ctx.createDelay(1.0);
+    delayNode.delayTime.value = 0.3; // 0.3秒遅らせることで、発話の頭切れを防ぐ
+
+    // 接続フロー:
+    // マイク入力 -> ノイズ除去 -> VAD (検知用・リアルタイム)
+    //                         -> 遅延 (0.3秒) -> 録音 (保存用)
     source.connect(noiseReduction.input);
-    const vadInput = noiseReduction.output;
-    const vadOutput = vad.connect(vadInput);
-    recorder.connectInput(vadOutput);
+    const cleanAudio = noiseReduction.output;
+
+    // VADにはリアルタイムの音声を流す（検知の遅れをなくすため）
+    vad.connect(cleanAudio);
+
+    // 録音には少し遅らせた音声を流す（検知した瞬間に、少し前の音から録音できるようにするため）
+    cleanAudio.connect(delayNode);
+    recorder.connectInput(delayNode);
 
     const runtime: PlayerRuntime = {
       speaker,
