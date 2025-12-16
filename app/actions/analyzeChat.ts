@@ -40,7 +40,7 @@ function getModel() {
         type: SchemaType.STRING,
         description: "会話パターンに紐づけられた変化球の種類",
         format: "enum",
-        enum: ["straight", "slider", "curve", "nuckle", "fork"],
+        enum: ["straight", "slider", "curve", "knuckle", "fork"],
         nullable: false,
       },
       tension: {

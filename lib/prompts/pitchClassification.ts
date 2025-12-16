@@ -9,7 +9,7 @@ export const PITCH_CLASSIFICATION_PROMPT = `
 
 ## 出力スキーマ (JSON)
 {
-  "pitchType": "straight" | "slider" | "curve" | "nuckle" | "fork",
+  "pitchType": "straight" | "slider" | "curve" | "knuckle" | "fork",
   "tension": number, // -1.0 (沈着/冷静) 〜 1.0 (興奮/高揚)
   "communicationStyle": number // -1.0 (論理/解決志向) 〜 1.0 (共感/受容志向)
 }
@@ -31,7 +31,7 @@ export const PITCH_CLASSIFICATION_PROMPT = `
 結論を急がず、感情や背景説明を大きく織り交ぜる。相手のペースを落とさせる、あるいは煙に巻くような、ゆったりとしたが捉えどころのない表現。
 - 特徴: フィラー、冗長、回りくどい表現、話題が逸れる、会話のペースが遅い
 
-### nuckle (ナックル)
+### knuckle (ナックル)
 **予測不能な不規則性**
 常識的な文脈や論理の重力から解放された発言。天然ボケ、シュールな返し、あるいは高度すぎて理解不能な飛躍。受け手がどう反応してよいか戸惑う揺らぎ。
 - 特徴: 会話が噛み合わない、的外れな返答、軸・筋が分からない

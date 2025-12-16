@@ -68,7 +68,7 @@ describe("analyzeChat Pitch Type Analysis", () => {
   );
 
   runTest(
-    "should detect 'nuckle' pitch for nonsensical or random speech",
+    "should detect 'knuckle' pitch for nonsensical or random speech",
     async () => {
       const messages: Message[] = [
         {
@@ -85,7 +85,7 @@ describe("analyzeChat Pitch Type Analysis", () => {
         },
       ];
       const result = await analyzeChat(messages);
-      expect(result.pitchType).toBe("nuckle");
+      expect(result.pitchType).toBe("knuckle");
     },
   );
 
