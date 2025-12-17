@@ -4,11 +4,10 @@ import { useAtom } from "jotai";
 import { useEffect, useRef, useState } from "react";
 import { ConversationCoordinator } from "@/lib/audio/coordinator";
 import { micDeviceState } from "@/state/micDeviceState";
-import { msgPacketArrayState } from "@/state/msgPacketState";
+import type { MsgPacketType } from "@/types/game";
 
-export function useAudioProcessing() {
+export function useAudioProcessing(onPacket: (packet: MsgPacketType) => void) {
   const [micDevice] = useAtom(micDeviceState);
-  const [, setPackets] = useAtom(msgPacketArrayState);
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const coordinatorRef = useRef<ConversationCoordinator | null>(null);
@@ -42,17 +41,9 @@ export function useAudioProcessing() {
             maxSpeech_ms: 10000,
           },
           collisionHold_ms: 500,
-          onPacket: (p, ruleResult) => {
+          onPacket: (p) => {
             if (cancelled) return;
-
-            const mergedData = {
-              ...p,
-              speed: ruleResult.speed,
-              is_fire: ruleResult.is_fire,
-              ball_scale: ruleResult.ball_scale,
-            };
-
-            setPackets((prev) => [mergedData, ...prev].slice(0, 50));
+            onPacket(p);
           },
         });
 
@@ -72,7 +63,7 @@ export function useAudioProcessing() {
         coordinatorRef.current = null;
       }
     };
-  }, [running, micDevice.mic1, micDevice.mic2, setPackets]);
+  }, [running, micDevice.mic1, micDevice.mic2, onPacket]);
 
   return {
     running,
