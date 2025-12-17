@@ -45,8 +45,6 @@ export function useAudioProcessing() {
           onPacket: (p, ruleResult) => {
             if (cancelled) return;
 
-            console.log(`[UI受信] 球速: ${ruleResult.speed}km/h`);
-
             const mergedData = {
               ...p,
               speed: ruleResult.speed,
