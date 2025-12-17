@@ -1,9 +1,9 @@
-import { MsgPacketType, RuleBasedResult } from '../../types/game';
+import type { MsgPacketType, RuleBasedResult } from "../../types/game";
 
 const CONFIG = {
-  BASE_SPEED: 130,        // 基本球速 (km/h)
-  MIN_SPEED: 80,          // 最低球速
-  MAX_SPEED: 165,         // 最高球速
+  BASE_SPEED: 130, // 基本球速 (km/h)
+  MIN_SPEED: 80, // 最低球速
+  MAX_SPEED: 165, // 最高球速
 
   // これが「倍率」にあたります
   // (今の速度 - 平均) が 1.0 増えるごとに、球速を何km/h追加するか
@@ -12,8 +12,10 @@ const CONFIG = {
   INITIAL_AVG_CPS: 6.0,
   LEARNING_RATE: 0.1,
   FIRE_VOLUME_THRESHOLD: 0.8,
-  SCALE_BASE_LENGTH: 20,
-  MAX_SCALE: 3.0,
+
+  MIN_BALL_SCALE: 1.0, // 最小サイズ (文字数0のとき)
+  MAX_BALL_SCALE: 2.0, // 最大サイズ (閾値を超えたとき)
+  MAX_SCALE_CHAR_THRESHOLD: 100, // 最大サイズになる文字数の閾値
 };
 
 export class SpeedCalculator {
@@ -57,14 +59,25 @@ export class SpeedCalculator {
     // 演出判定
     const isFire = packet.volume >= CONFIG.FIRE_VOLUME_THRESHOLD;
 
-    let scale = 1.0 + (packet.text.length - CONFIG.SCALE_BASE_LENGTH) * 0.02;
-    scale = Math.min(Math.max(scale, 0.5), CONFIG.MAX_SCALE);
+    // ボールサイズ計算
+    const charCount = packet.text.length;
+
+    //1. 割合を計算(現在の文字数 / 閾値の100文字)
+    const ratio = Math.min(charCount / CONFIG.MAX_SCALE_CHAR_THRESHOLD, 1.0);
+
+    //2. 大きさを計算(最小値1.0から最大値2.0まで増やす)
+    let scale =
+      CONFIG.MIN_BALL_SCALE +
+      ratio * (CONFIG.MAX_BALL_SCALE - CONFIG.MIN_BALL_SCALE);
+
+    //桁数を整える
+    scale = Math.round(scale * 100) / 100;
 
     return {
       speed: Math.floor(speed),
       is_silent: false,
       is_fire: isFire,
-      ball_scale: Number(scale.toFixed(2)),
+      ball_scale: Number(scale),
     };
   }
 
@@ -73,12 +86,14 @@ export class SpeedCalculator {
       speed: CONFIG.MIN_SPEED,
       is_silent: true,
       is_fire: false,
-      ball_scale: 1.0,
+      ball_scale: CONFIG.MIN_BALL_SCALE, // 定数を用いるよん
     };
   }
 
   private updateAverage(currentVal: number) {
-    this.averageCps = (this.averageCps * (1 - CONFIG.LEARNING_RATE)) + (currentVal * CONFIG.LEARNING_RATE);
+    this.averageCps =
+      this.averageCps * (1 - CONFIG.LEARNING_RATE) +
+      currentVal * CONFIG.LEARNING_RATE;
   }
 
   public getCurrentAverageCps(): number {
