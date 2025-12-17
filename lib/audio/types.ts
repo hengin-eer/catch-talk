@@ -24,7 +24,7 @@ export type CoordinatorConfig = {
   vad?: Partial<VADConfig>;
   recorder?: RecorderConfig;
   collisionHold_ms?: number;
-  onPacket: (packet: MsgPacketType, result: RuleBasedResult) => void;
+  onPacket: (packet: MsgPacketType) => void;
   onRms?: (speaker: Speaker, rms01: number) => void;
   onVADStateChange?: (speaker: Speaker, isSpeaking: boolean) => void;
 };
