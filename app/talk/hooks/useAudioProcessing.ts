@@ -42,9 +42,19 @@ export function useAudioProcessing() {
             maxSpeech_ms: 10000,
           },
           collisionHold_ms: 500,
-          onPacket: (p) => {
+          onPacket: (p, ruleResult) => {
             if (cancelled) return;
-            setPackets((prev) => [p, ...prev].slice(0, 50));
+
+            console.log(`[UI受信] 球速: ${ruleResult.speed}km/h`);
+
+            const mergedData = {
+              ...p,
+              speed: ruleResult.speed,
+              is_fire: ruleResult.is_fire,
+              ball_scale: ruleResult.ball_scale,
+            };
+
+            setPackets((prev) => [mergedData, ...prev].slice(0, 50));
           },
         });
 
