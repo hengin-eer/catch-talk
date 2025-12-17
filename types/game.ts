@@ -6,6 +6,11 @@ export type MsgPacketType = {
   volume: number; // 音量（0.0〜1.0）
   text: string; // STT出力
   is_collision: boolean; // 他者との発話重複フラグ
+
+  // 型定義の更新
+  speed?: number;
+  is_fire?: boolean;
+  ball_scale?: number;
 };
 
 export type RuleBasedResult = {
