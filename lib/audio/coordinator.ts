@@ -40,12 +40,21 @@ export class ConversationCoordinator {
   }
 
   private async setupPlayer(speaker: Speaker) {
-    if (!this.ctx) return;
+    if (!this.ctx) {
+      console.error("AudioContext is null in setupPlayer");
+      return;
+    }
 
     const capture = new AudioStreamCapture();
     const stream = await capture.start(
       this.config.micDeviceIdBySpeaker[speaker],
     );
+    // capture.start()中にstop()が呼ばれてctxがnullになる可能性があるため再チェック
+    if (!this.ctx) {
+      capture.stop();
+      return;
+    }
+
     const source = this.ctx.createMediaStreamSource(stream);
 
     const noiseReduction = createNoiseReducer(this.ctx);
@@ -115,7 +124,9 @@ export class ConversationCoordinator {
     rt.isSpeaking = false;
     const startAt = rt.speakStartAt;
     rt.speakStartAt = null;
-    rt.lastAvgRms = Math.max(0, Math.min(1, avgRms));
+    // 丸め処理: 小数点第3位まで (例: 0.12345 -> 0.123)
+    const roundedRms = Math.round(avgRms * 1000) / 1000;
+    rt.lastAvgRms = Math.max(0, Math.min(1, roundedRms));
 
     this.config.onVADStateChange?.(rt.speaker, false);
     this.clearOverlapTimer();
