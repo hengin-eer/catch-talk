@@ -48,6 +48,16 @@ STT（音声認識）の結果をGeminiによる会話分析（`analyzeChat`）�
     *   **突発音フィルタ（Slew Rate Limiter的な処理）**: 急激な音量変化（アタックが鋭すぎる音）を抑制、またはVAD側で「短すぎるかつ急激な音」を弾くロジックを検討する。
     *   **実装場所**: `lib/audio/noiseReduction.ts` または `vad-processor.js`。
 
+#### D. Gemini連携 (analyzeChat)
+*   **目的**: 会話の緊張感やコミュニケーションスタイルを分析する。
+*   **実装**:
+  * `useChat`内で`analyzeChat`サーバーアクションを呼び出す。
+  * 呼び出しタイミング: `messagesState`が更新された後（`onPacket`内）。
+
+##### 処理結果の状態管理
+- `PitchData3D`: `GptBasedResult`を反映した3Dモデルアニメーション用の投球データを生成・保存。
+- `PitchDataChart`: 上と同様に`GptBasedResult`をベースに、配球チャート用座標を反映したデータを生成・保存。
+
 ## タスクリスト
 
 - [ ] **State定義**: `state/gameData.ts` (新規または既存) に `messagesState`, `pitchData3DState`, `pitchDataChartState` を定義する。
@@ -57,10 +67,12 @@ STT（音声認識）の結果をGeminiによる会話分析（`analyzeChat`）�
     - [ ] `messagesState` の更新処理を追加。
     - [ ] 沈黙判定タイマー（5秒ルール）の実装。
     - [ ] `PitchData3D` / `PitchDataChart` の生成と更新処理の実装（まずはRuleBasedResultのみで構成し、足りない項目はデフォルト値で埋める）。
+    - [ ] `analyzeChat` の呼び出し処理を追加。
 - [ ] **動作確認**:
     - [ ] 音量が正しく数値で取得できること。
     - [ ] 小さい声でも（設定した閾値を超えれば）Fire判定になること。
     - [ ] 5秒放置すると沈黙判定（ヤジ演出用データ）が生成されること。
+    - [ ] Gemini分析が走り、コンソールに結果が表示されること。
 - [ ] **ノイズ除去調整**:
     - [ ] `noiseReduction.ts` のフィルタ周波数調整（人の声に最適化）。
     - [ ] 必要に応じてVADの感度調整。
