@@ -1,4 +1,4 @@
-import type { MsgPacketType, RuleBasedResult } from "@/types/game";
+import type { MsgPacketType } from "@/types/game";
 
 export type Speaker = "player1" | "player2";
 
