@@ -34,13 +34,17 @@ export class VoiceActivityDetector {
     });
 
     this.worklet.port.onmessage = (event) => {
-      const { type, value } = event.data;
+      const data = event.data;
+      const { type } = data;
+
       if (type === "speech_start") {
         this.listeners.speech_start?.();
       } else if (type === "speech_end") {
-        this.listeners.speech_end?.(value); // value is avgRms
+        // vad-processor.js sends { type: "speech_end", avgRms: number, ... }
+        this.listeners.speech_end?.(data.avgRms);
       } else if (type === "rms") {
-        this.listeners.rms?.(value);
+        // vad-processor.js sends { type: "rms", value: number }
+        this.listeners.rms?.(data.value);
       }
     };
   }
