@@ -1,10 +1,15 @@
-import type { MsgPacketType } from "@/types/game";
+import { SpeedCalculator } from "@/test/rulebase/speed";
+import type { MsgPacketType, RuleBasedResult } from "@/types/game";
 import { AudioStreamCapture } from "./capture";
 import { createNoiseReducer, type NoiseReductionChain } from "./noiseReduction";
 import { MediaStreamRecorder } from "./recorder";
 import { stt } from "./stt";
 import type { CoordinatorConfig, Speaker } from "./types";
 import { VoiceActivityDetector } from "./vad";
+
+export type EnhancedMsgPacket = MsgPacketType & {
+  ruleResult: RuleBasedResult;
+};
 
 type PlayerRuntime = {
   speaker: Speaker;
@@ -23,6 +28,8 @@ export class ConversationCoordinator {
   private ctx: AudioContext | null = null;
   private players: Map<Speaker, PlayerRuntime> = new Map();
   private overlapTimer: number | null = null;
+
+  private speedCalc = new SpeedCalculator();
 
   constructor(private config: CoordinatorConfig) {}
 
@@ -144,8 +151,14 @@ export class ConversationCoordinator {
       is_collision: rt.collisionFlag,
     };
 
+    const ruleResult = this.speedCalc.calculate(packet);
+
+    console.log(
+      `[SpeedCalc] Text: "${text}" -> Speed: ${ruleResult.speed}km/h (AvgCPS: ${this.speedCalc.getCurrentAverageCps().toFixed(2)})`,
+    );
+
     rt.collisionFlag = false;
-    this.config.onPacket(packet);
+    this.config.onPacket(packet, ruleResult);
   }
 
   private checkOverlap() {

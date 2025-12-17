@@ -1,4 +1,4 @@
-import type { MsgPacketType } from "@/types/game";
+import type { MsgPacketType, RuleBasedResult } from "@/types/game";
 
 export type Speaker = "player1" | "player2";
 
@@ -24,7 +24,7 @@ export type CoordinatorConfig = {
   vad?: Partial<VADConfig>;
   recorder?: RecorderConfig;
   collisionHold_ms?: number;
-  onPacket: (packet: MsgPacketType) => void;
+  onPacket: (packet: MsgPacketType, result: RuleBasedResult) => void;
   onRms?: (speaker: Speaker, rms01: number) => void;
   onVADStateChange?: (speaker: Speaker, isSpeaking: boolean) => void;
 };
