@@ -6,13 +6,7 @@ import {
   type Schema,
   SchemaType,
 } from "@google/generative-ai";
-
-export type Speaker = "player1" | "player2";
-
-export type Message = {
-  speaker: Speaker;
-  text: string;
-};
+import type { Message } from "@/types/game";
 
 export type ChatAnalysisResult = {
   tension: number;

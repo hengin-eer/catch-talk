@@ -60,10 +60,9 @@ export type PitchDataChart = BasePitchData & {
   };
 };
 
-// Jotai用
-export type TextLogItem = {
-  text: string;
+export type Message = {
   speaker: "player1" | "player2";
+  text: string;
 };
 
 export type PitchHistoryItem = PitchDataChart;
