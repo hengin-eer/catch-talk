@@ -133,8 +133,8 @@ export const createNoiseReducer = (
   ctx: AudioContext,
   config: NoiseReductionConfig = {},
 ): NoiseReductionChain => {
-  const highPassFreq = config.highPassFreq ?? 150;
-  const lowPassFreq = config.lowPassFreq ?? 8000;
+  const highPassFreq = config.highPassFreq ?? 300;
+  const lowPassFreq = config.lowPassFreq ?? 3400;
   const gateThreshold = config.gateThreshold ?? 0.02;
   const useCompressor = config.useCompressor ?? true;
 
