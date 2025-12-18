@@ -17,12 +17,39 @@ export class AudioStreamCapture {
     };
 
     try {
-      this.stream = await navigator.mediaDevices.getUserMedia(constraints);
+      this.stream = await this.getUserMediaWithRetry(constraints);
       return this.stream;
     } catch (error) {
       console.error("Failed to get user media:", error);
       throw error;
     }
+  }
+
+  private async getUserMediaWithRetry(
+    constraints: MediaStreamConstraints,
+    retries = 3,
+    delay = 500,
+  ): Promise<MediaStream> {
+    for (let i = 0; i < retries; i++) {
+      try {
+        return await navigator.mediaDevices.getUserMedia(constraints);
+      } catch (error) {
+        if (
+          i < retries - 1 &&
+          error instanceof DOMException &&
+          (error.name === "NotReadableError" ||
+            error.name === "TrackStartError")
+        ) {
+          console.warn(
+            `getUserMedia failed with ${error.name}, retrying in ${delay}ms...`,
+          );
+          await new Promise((resolve) => setTimeout(resolve, delay));
+        } else {
+          throw error;
+        }
+      }
+    }
+    throw new Error("Unreachable");
   }
 
   stop() {

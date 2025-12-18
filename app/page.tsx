@@ -37,7 +37,7 @@ async function createLevelMonitor(
       deviceId: { exact: deviceId },
       echoCancellation: false,
       noiseSuppression: false,
-      autoGainControl: false,
+      autoGainControl: true,
     },
   });
 
@@ -103,7 +103,13 @@ export default function Home() {
 
       inflight = (async () => {
         try {
-          await navigator.mediaDevices.getUserMedia({ audio: true });
+          const stream = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+          });
+          stream.getTracks().forEach((t) => {
+            t.stop();
+          });
+
           const devs = (await navigator.mediaDevices.enumerateDevices()).filter(
             (d) => d.kind === "audioinput",
           );
