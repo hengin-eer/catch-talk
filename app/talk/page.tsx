@@ -1,6 +1,7 @@
 "use client";
 
 import { useAtom } from "jotai";
+import PitchingView from "@/components/3d/PitchingView"; //3D表示のコンポーネント
 import { msgPacketArrayState } from "@/state/msgPacketState";
 import { useAudioProcessing } from "./hooks/useAudioProcessing";
 
@@ -11,6 +12,19 @@ export default function TalkPage() {
   return (
     <div style={{ padding: 16 }}>
       <h1 style={{ fontSize: 18, fontWeight: 700 }}>Talk</h1>
+
+      {/* 3Dビューの表示 */}
+      <div
+        style={{
+          flex: 1,
+          minHeight: "400px",
+          position: "relative",
+          border: "1px solid #ccc",
+          marginTop: 10,
+        }}
+      >
+        <PitchingView />
+      </div>
 
       {!canStart && (
         <p style={{ color: "#c00" }}>
