@@ -6,16 +6,8 @@ import {
   type Schema,
   SchemaType,
 } from "@google/generative-ai";
-import type { GptBasedResult } from "@/types/game";
-
-export type Speaker = "player1" | "player2";
-
-export type Message = {
-  speaker: Speaker;
-  text: string;
-};
-
 import { PITCH_CLASSIFICATION_PROMPT } from "@/lib/prompts/pitchClassification";
+import type { GptBasedResult, Message } from "@/types/game";
 
 // Initialize Gemini API lazily to avoid build-time/test-time env var issues
 let model: GenerativeModel | null = null;

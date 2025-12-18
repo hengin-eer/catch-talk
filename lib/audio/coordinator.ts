@@ -1,15 +1,10 @@
-import { SpeedCalculator } from "@/test/rulebase/speed";
-import type { MsgPacketType, RuleBasedResult } from "@/types/game";
+import type { MsgPacketType } from "@/types/game";
 import { AudioStreamCapture } from "./capture";
 import { createNoiseReducer, type NoiseReductionChain } from "./noiseReduction";
 import { MediaStreamRecorder } from "./recorder";
 import { stt } from "./stt";
 import type { CoordinatorConfig, Speaker } from "./types";
 import { VoiceActivityDetector } from "./vad";
-
-export type EnhancedMsgPacket = MsgPacketType & {
-  ruleResult: RuleBasedResult;
-};
 
 type PlayerRuntime = {
   speaker: Speaker;
@@ -29,8 +24,6 @@ export class ConversationCoordinator {
   private players: Map<Speaker, PlayerRuntime> = new Map();
   private overlapTimer: number | null = null;
 
-  private speedCalc = new SpeedCalculator();
-
   constructor(private config: CoordinatorConfig) {}
 
   async start() {
@@ -42,17 +35,33 @@ export class ConversationCoordinator {
       await this.ctx.resume();
     }
 
+    // stop()が呼ばれていたら中断
+    if (!this.ctx) return;
+
     await this.setupPlayer("player1");
+
+    // stop()が呼ばれていたら中断
+    if (!this.ctx) return;
+
     await this.setupPlayer("player2");
   }
 
   private async setupPlayer(speaker: Speaker) {
-    if (!this.ctx) return;
+    if (!this.ctx) {
+      // 既にstop()されている場合は何もしない
+      return;
+    }
 
     const capture = new AudioStreamCapture();
     const stream = await capture.start(
       this.config.micDeviceIdBySpeaker[speaker],
     );
+    // capture.start()中にstop()が呼ばれてctxがnullになる可能性があるため再チェック
+    if (!this.ctx) {
+      capture.stop();
+      return;
+    }
+
     const source = this.ctx.createMediaStreamSource(stream);
 
     const noiseReduction = createNoiseReducer(this.ctx);
@@ -122,7 +131,9 @@ export class ConversationCoordinator {
     rt.isSpeaking = false;
     const startAt = rt.speakStartAt;
     rt.speakStartAt = null;
-    rt.lastAvgRms = Math.max(0, Math.min(1, avgRms));
+    // 丸め処理: 小数点第3位まで (例: 0.12345 -> 0.123)
+    const roundedRms = Math.round(avgRms * 1000) / 1000;
+    rt.lastAvgRms = Math.max(0, Math.min(1, roundedRms));
 
     this.config.onVADStateChange?.(rt.speaker, false);
     this.clearOverlapTimer();
@@ -139,7 +150,17 @@ export class ConversationCoordinator {
     const duration_ms = Math.max(0, endAt - startAt);
 
     // STT
-    const text = await stt(blob, { sample_rate_hz: this.ctx?.sampleRate });
+    // Opus supports only 8000, 12000, 16000, 24000, 48000 Hz.
+    // If the context sample rate is 44100 (common default), we should not send it as a config,
+    // because MediaRecorder likely resamples to 48000 for Opus, or the backend will detect it from the file.
+    const sampleRate = this.ctx?.sampleRate;
+    const supportedRates = [8000, 12000, 16000, 24000, 48000];
+    const sttOptions =
+      sampleRate && supportedRates.includes(sampleRate)
+        ? { sample_rate_hz: sampleRate }
+        : {};
+
+    const text = await stt(blob, sttOptions);
 
     const packet: MsgPacketType = {
       uuid: crypto.randomUUID(),
@@ -151,14 +172,8 @@ export class ConversationCoordinator {
       is_collision: rt.collisionFlag,
     };
 
-    const ruleResult = this.speedCalc.calculate(packet);
-
-    console.log(
-      `[SpeedCalc] Text: "${text}" -> Speed: ${ruleResult.speed}km/h (AvgCPS: ${this.speedCalc.getCurrentAverageCps().toFixed(2)})`,
-    );
-
     rt.collisionFlag = false;
-    this.config.onPacket(packet, ruleResult);
+    this.config.onPacket(packet);
   }
 
   private checkOverlap() {

@@ -27,7 +27,7 @@ export class SpeedCalculator {
 
   public calculate(packet: MsgPacketType): RuleBasedResult {
     if (!packet.text || packet.text.trim().length === 0) {
-      return this.createSilentResult();
+      return this.createSilentResult(packet.uuid);
     }
 
     // 1. 今の速度を計算
@@ -74,6 +74,7 @@ export class SpeedCalculator {
     scale = Math.round(scale * 100) / 100;
 
     return {
+      packetId: packet.uuid,
       speed: Math.floor(speed),
       is_silent: false,
       is_fire: isFire,
@@ -81,8 +82,9 @@ export class SpeedCalculator {
     };
   }
 
-  private createSilentResult(): RuleBasedResult {
+  private createSilentResult(packetId?: string): RuleBasedResult {
     return {
+      packetId: packetId ?? "",
       speed: CONFIG.MIN_SPEED,
       is_silent: true,
       is_fire: false,

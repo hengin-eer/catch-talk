@@ -6,14 +6,10 @@ export type MsgPacketType = {
   volume: number; // 音量（0.0〜1.0）
   text: string; // STT出力
   is_collision: boolean; // 他者との発話重複フラグ
-
-  // 型定義の更新
-  speed?: number;
-  is_fire?: boolean;
-  ball_scale?: number;
 };
 
 export type RuleBasedResult = {
+  packetId: string; // MsgPacketType.uuid と紐付け
   speed: number; // 球速 (km/h)
   is_silent: boolean; // 沈黙フラグ（ヤジ演出用）
   is_fire: boolean; // 火の玉フラグ（音量由来）
@@ -46,6 +42,8 @@ type BasePitchData = {
   is_silent: boolean; // 沈黙フラグ
   is_fire: boolean; // 火の玉フラグ
   ball_scale: number; // ボールの大きさ
+  text?: string; // 発話内容
+  speaker?: "player1" | "player2"; // 話者
 };
 
 /**
@@ -65,10 +63,9 @@ export type PitchDataChart = BasePitchData & {
   };
 };
 
-// Jotai用
-export type TextLogItem = {
-  text: string;
+export type Message = {
   speaker: "player1" | "player2";
+  text: string;
 };
 
 export type PitchHistoryItem = PitchDataChart;

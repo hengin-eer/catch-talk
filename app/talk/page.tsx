@@ -1,16 +1,20 @@
 "use client";
 
-import { useAtom } from "jotai";
-import { msgPacketArrayState } from "@/state/msgPacketState";
-import { useAudioProcessing } from "./hooks/useAudioProcessing";
+import { useAtomValue } from "jotai";
+import { ChatAnalysisDebug } from "@/components/debug/ChatAnalysisDebug";
+import { messagesState } from "@/state/gameData";
+import { useChat } from "./hooks/useChat";
 
 export default function TalkPage() {
-  const [packets, setPackets] = useAtom(msgPacketArrayState);
-  const { running, setRunning, error, canStart } = useAudioProcessing();
+  const messages = useAtomValue(messagesState);
+  const { running, setRunning, error, canStart, clearLogs, isSilent } =
+    useChat();
 
   return (
     <div style={{ padding: 16 }}>
-      <h1 style={{ fontSize: 18, fontWeight: 700 }}>Talk</h1>
+      <h1 style={{ fontSize: 18, fontWeight: 700 }}>
+        Talk (useChat Integration)
+      </h1>
 
       {!canStart && (
         <p style={{ color: "#c00" }}>
@@ -37,28 +41,21 @@ export default function TalkPage() {
         </button>
         <button
           type="button"
-          disabled={running || packets.length === 0}
-          onClick={() => setPackets([])}
+          disabled={running || messages.length === 0}
+          onClick={clearLogs}
         >
           Clear
         </button>
       </div>
 
       <div style={{ marginTop: 16 }}>
-        <h2 style={{ fontSize: 14, fontWeight: 700 }}>Packets</h2>
-        <ul style={{ marginTop: 8, paddingLeft: 16 }}>
-          {packets.map((p) => (
-            <li key={p.uuid} style={{ marginBottom: 8 }}>
-              <div style={{ fontSize: 12, opacity: 0.8 }}>
-                {p.start_at.toLocaleTimeString("ja-JP", { hour12: false })} /{" "}
-                {p.speaker} / {p.duration_ms}ms / vol=
-                {p.volume.toFixed(2)} / collision={String(p.is_collision)}
-              </div>
-              <div>{p.text}</div>
-            </li>
-          ))}
-        </ul>
+        <h2 style={{ fontSize: 14, fontWeight: 700 }}>Messages</h2>
+        <p style={{ fontSize: 12, color: "#666" }}>
+          ※デバッグ表示は右下のパネルを確認してください
+        </p>
       </div>
+
+      <ChatAnalysisDebug isSilent={isSilent} />
     </div>
   );
 }
