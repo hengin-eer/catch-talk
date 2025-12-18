@@ -1,8 +1,7 @@
 "use client";
 
 import { useAtom } from "jotai";
-import { useEffect, useRef } from "react";
-import { v7 as uuidv7 } from "uuid";
+import { useEffect, useRef, useState } from "react";
 import { analyzeChat } from "@/app/actions/analyzeChat";
 import { mapToCourseGrid } from "@/lib/rulebase/course";
 import { calculateBallScale } from "@/lib/rulebase/scale";
@@ -21,6 +20,7 @@ import type {
   RuleBasedResult,
 } from "@/types/game";
 import { useAudioProcessing } from "./useAudioProcessing";
+import { useSilence } from "./useSilence";
 
 const SILENCE_TIMEOUT_MS = 5000;
 
@@ -28,6 +28,12 @@ export function useChat() {
   const [messages, setMessages] = useAtom(messagesState);
   const [, setPitchData3D] = useAtom(pitchData3DState);
   const [, setPitchDataChart] = useAtom(pitchDataChartState);
+  const [lastActivityTime, setLastActivityTime] = useState<number | null>(null);
+
+  const { isSilent: isSilenceDetected } = useSilence(
+    lastActivityTime,
+    SILENCE_TIMEOUT_MS,
+  );
 
   // messagesの最新値を参照するためのRef
   const messagesRef = useRef(messages);
@@ -40,63 +46,9 @@ export function useChat() {
     speedCalcRef.current = new SpeedCalculator();
   }
 
-  const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
-
-  const handleSilence = () => {
-    const packetId = uuidv7();
-    const ruleResult: RuleBasedResult = {
-      packetId,
-      speed: 0,
-      is_silent: true,
-      is_fire: false,
-      ball_scale: 1.0,
-    };
-
-    const pitch3D: PitchData3D = {
-      uuid: packetId,
-      speed: ruleResult.speed,
-      type: "straight",
-      is_silent: true,
-      is_fire: false,
-      ball_scale: 1.0,
-      course: "mid-center",
-      text: "(Silence...)",
-    };
-
-    const pitchChart: PitchDataChart = {
-      uuid: packetId,
-      speed: ruleResult.speed,
-      type: "straight",
-      is_silent: true,
-      is_fire: false,
-      ball_scale: 1.0,
-      coordinate: { x: 0, y: 0 },
-      text: "(Silence...)",
-    };
-
-    setPitchData3D((prev) => [pitch3D, ...prev].slice(0, 50));
-    setPitchDataChart((prev) => [pitchChart, ...prev].slice(0, 50));
-    console.log("Silence detected");
-  };
-
-  const resetSilenceTimer = () => {
-    if (silenceTimerRef.current) {
-      clearTimeout(silenceTimerRef.current);
-    }
-    silenceTimerRef.current = setTimeout(handleSilence, SILENCE_TIMEOUT_MS);
-  };
-
-  useEffect(() => {
-    return () => {
-      if (silenceTimerRef.current) {
-        clearTimeout(silenceTimerRef.current);
-      }
-    };
-  }, []);
-
   const { running, setRunning, error, canStart } = useAudioProcessing(
     async (packet) => {
-      resetSilenceTimer();
+      setLastActivityTime(Date.now());
 
       const speed = speedCalcRef.current?.calculate(packet) ?? 0;
       const silent = isSilent(packet);
@@ -190,5 +142,6 @@ export function useChat() {
     error,
     canStart,
     clearLogs,
+    isSilent: isSilenceDetected,
   };
 }
