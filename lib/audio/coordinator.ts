@@ -143,7 +143,17 @@ export class ConversationCoordinator {
     const duration_ms = Math.max(0, endAt - startAt);
 
     // STT
-    const text = await stt(blob, { sample_rate_hz: this.ctx?.sampleRate });
+    // Opus supports only 8000, 12000, 16000, 24000, 48000 Hz.
+    // If the context sample rate is 44100 (common default), we should not send it as a config,
+    // because MediaRecorder likely resamples to 48000 for Opus, or the backend will detect it from the file.
+    const sampleRate = this.ctx?.sampleRate;
+    const supportedRates = [8000, 12000, 16000, 24000, 48000];
+    const sttOptions =
+      sampleRate && supportedRates.includes(sampleRate)
+        ? { sample_rate_hz: sampleRate }
+        : {};
+
+    const text = await stt(blob, sttOptions);
 
     const packet: MsgPacketType = {
       uuid: crypto.randomUUID(),
