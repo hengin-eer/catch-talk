@@ -35,13 +35,20 @@ export class ConversationCoordinator {
       await this.ctx.resume();
     }
 
+    // stop()が呼ばれていたら中断
+    if (!this.ctx) return;
+
     await this.setupPlayer("player1");
+
+    // stop()が呼ばれていたら中断
+    if (!this.ctx) return;
+
     await this.setupPlayer("player2");
   }
 
   private async setupPlayer(speaker: Speaker) {
     if (!this.ctx) {
-      console.error("AudioContext is null in setupPlayer");
+      // 既にstop()されている場合は何もしない
       return;
     }
 
