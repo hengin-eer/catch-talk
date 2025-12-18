@@ -41,6 +41,8 @@ type BasePitchData = {
   is_silent: boolean; // 沈黙フラグ
   is_fire: boolean; // 火の玉フラグ
   ball_scale: number; // ボールの大きさ
+  text?: string; // 発話内容
+  speaker?: "player1" | "player2"; // 話者
 };
 
 /**
