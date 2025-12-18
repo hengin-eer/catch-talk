@@ -41,8 +41,8 @@ describe("RuleBase Logic Tests", () => {
       expect(isFire(packet)).toBe(true);
     });
 
-    it("音量が0.8未満なら false を返すこと", () => {
-      const packet = createPacket("test", 0.79);
+    it("音量が0.2未満なら false を返すこと", () => {
+      const packet = createPacket("test", 0.19);
       expect(isFire(packet)).toBe(false);
     });
   });
