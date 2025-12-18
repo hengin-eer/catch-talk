@@ -1,0 +1,147 @@
+.container {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  background-color: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  font-family: monospace;
+  font-size: 0.75rem;
+  z-index: 50;
+  width: 400px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.header {
+  font-weight: bold;
+  border-bottom: 1px solid #4b5563;
+  padding-bottom: 0.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sectionTitle {
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.chartContainer {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  border: 1px solid #6b7280;
+  background-color: #111827;
+  margin: 0 auto;
+}
+
+.gridLineH {
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  background-color: #374151;
+}
+
+.gridLineV {
+  position: absolute;
+  height: 100%;
+  width: 1px;
+  background-color: #374151;
+}
+
+.centerCrossH {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background-color: #4b5563;
+  opacity: 0.5;
+}
+
+.centerCrossV {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  height: 100%;
+  width: 1px;
+  background-color: #4b5563;
+  opacity: 0.5;
+}
+
+.plotPoint {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.plotFire {
+  color: #ef4444;
+  font-weight: bold;
+}
+
+.plotNormal {
+  color: #67e8f9;
+}
+
+.listContainer {
+  overflow-y: auto;
+  max-height: 300px;
+  border: 1px solid #374151;
+  border-radius: 0.25rem;
+  background-color: #1f2937;
+}
+
+.listItem {
+  padding: 0.5rem;
+  border-bottom: 1px solid #374151;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.listItem:last-child {
+  border-bottom: none;
+}
+
+.itemHeader {
+  display: flex;
+  justify-content: space-between;
+  color: #9ca3af;
+}
+
+.itemText {
+  color: #e5e7eb;
+  word-break: break-all;
+}
+
+.itemDetails {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.25rem;
+  color: #d1d5db;
+  margin-top: 0.25rem;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+}
+
+.detailLabel {
+  color: #6b7280;
+}
