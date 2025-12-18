@@ -81,8 +81,13 @@ export function ChatAnalysisDebug({ isSilent }: { isSilent: boolean }) {
 
           {/* Plots */}
           {pitchDataChart.map((p) => {
-            const top = ((1 - p.coordinate.y) / 2) * 100;
+            // coordinate.x: -1.0 (Left) ~ 1.0 (Right)
+            // coordinate.y: -1.0 (Bottom) ~ 1.0 (Top)
+            // CSS left: 0% ~ 100%
+            // CSS top: 100% ~ 0% (Y is inverted in CSS)
+
             const left = ((p.coordinate.x + 1) / 2) * 100;
+            const top = ((1 - p.coordinate.y) / 2) * 100;
 
             return (
               <div
