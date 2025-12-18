@@ -1,6 +1,7 @@
 import { describe, expect } from "vitest";
-import { analyzeChat, type Message } from "@/app/actions/analyzeChat";
+import { analyzeChat } from "@/app/actions/analyzeChat";
 import { getTestRunner } from "@/test/test-utils";
+import type { Message } from "@/types/game";
 
 describe("analyzeChat Pitch Type Analysis", () => {
   const runTest = getTestRunner();
