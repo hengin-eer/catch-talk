@@ -107,7 +107,11 @@ export function useChat() {
           const course = mapToCourseGrid(analysis);
 
           setPitchData3D((prev) =>
-            prev.map((p) => (p.uuid === packet.uuid ? { ...p, course } : p)),
+            prev.map((p) =>
+              p.uuid === packet.uuid
+                ? { ...p, course, type: analysis.pitchType }
+                : p,
+            ),
           );
 
           setPitchDataChart((prev) =>
@@ -115,7 +119,8 @@ export function useChat() {
               p.uuid === packet.uuid
                 ? {
                     ...p,
-                    coordinates: {
+                    type: analysis.pitchType,
+                    coordinate: {
                       x: analysis.communicationStyle,
                       y: analysis.tension,
                     },
