@@ -12,9 +12,9 @@
 *   **After**: 配列への追加は行わない。代わりに `isSilent` という真偽値をフックから返す。
 
 ### 2. 判定ロジック
-*   メッセージパケット（`MsgPacketType`）の受信タイムスタンプを監視基準とする。
-*   最後のパケット受信から一定時間（`SILENCE_THRESHOLD_MS = 5000`）経過した場合に `isSilent = true` とする。
-*   新しいパケットを受信した時点で `isSilent = false` に戻り、タイマーをリセットする。
+*   **監視基準**: メッセージパケット（`MsgPacketType`）自体のタイムスタンプは不変であるため、これとは別に「最後にアクティビティ（発話受信）があった時刻」をStateとして管理し、これを監視基準とする。
+*   **判定**: 最後のパケット受信（アクティビティ更新）から一定時間（`SILENCE_THRESHOLD_MS = 5000`）経過した場合に `isSilent = true` とする。
+*   **リセット**: 新しいパケットを受信した時点で `isSilent = false` に戻り、タイマーをリセットする。
 
 ## 設計
 
@@ -25,23 +25,23 @@
 ```typescript
 /**
  * 沈黙判定フック
- * @param lastPacketTimestamp 最後のパケット受信時刻 (Unix Epoch ms)
+ * @param lastActivityTime 最後のパケット受信時刻など、アクティビティがあった時刻 (Unix Epoch ms)
  * @param thresholdMs 沈黙と判定するまでの閾値 (ms)
  */
-export function useSilence(lastPacketTimestamp: number | null, thresholdMs: number = 5000) {
+export function useSilence(lastActivityTime: number | null, thresholdMs: number = 5000) {
   // ...
   return { isSilent };
 }
 ```
 
 #### 内部ロジック
-1.  `lastPacketTimestamp` が更新されるたびに、既存のタイマーをクリアし、`isSilent` を `false` に設定。
+1.  `lastActivityTime` が更新されるたびに、既存のタイマーをクリアし、`isSilent` を `false` に設定。
 2.  新たに `setTimeout` をセットし、`thresholdMs` 経過後に `isSilent` を `true` に更新する。
 3.  コンポーネントのアンマウント時にタイマーをクリアする。
 
 ### `useChat` の改修
 *   `useSilence` をインポートして使用する。
-*   `useAudioProcessing` のコールバック内で、パケット受信時にタイムスタンプを更新するState（`lastPacketTimestamp`）を管理し、それを `useSilence` に渡す。
+*   `useAudioProcessing` のコールバック内で、パケット受信時に「最終アクティビティ時刻（`lastActivityTime`）」を `Date.now()` で更新し、それを `useSilence` に渡す。
 *   `handleSilence` （ダミーデータ生成処理）を削除する。
 *   `useChat` の返り値に `isSilent` を追加する。
 
