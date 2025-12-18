@@ -98,7 +98,8 @@ class VadProcessor extends AudioWorkletProcessor {
         sumSq += v * v;
       }
     }
-    const rms = inCh0.length > 0 ? Math.sqrt(sumSq / inCh0.length) : 0;
+    const rmsRaw = inCh0.length > 0 ? Math.sqrt(sumSq / inCh0.length) : 0;
+    const rms = Number.isNaN(rmsRaw) ? 0 : rmsRaw;
 
     this.port.postMessage({ type: "rms", value: rms, sample: currentFrame });
 
