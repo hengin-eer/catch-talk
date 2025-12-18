@@ -6,12 +6,8 @@ import {
   type Schema,
   SchemaType,
 } from "@google/generative-ai";
-import type { Message } from "@/types/game";
-
-export type ChatAnalysisResult = {
-  tension: number;
-  communicationStyle: number;
-};
+import { PITCH_CLASSIFICATION_PROMPT } from "@/lib/prompts/pitchClassification";
+import type { GptBasedResult, Message } from "@/types/game";
 
 // Initialize Gemini API lazily to avoid build-time/test-time env var issues
 let model: GenerativeModel | null = null;
@@ -28,9 +24,17 @@ function getModel() {
 
   // Define the response schema for structured output
   const schema: Schema = {
-    description: "Analysis of chat content for tension and communication style",
+    description:
+      "Analysis of chat content for tension, communication style, and pitch type",
     type: SchemaType.OBJECT,
     properties: {
+      pitchType: {
+        type: SchemaType.STRING,
+        description: "会話パターンに紐づけられた変化球の種類",
+        format: "enum",
+        enum: ["straight", "slider", "curve", "knuckle", "fork"],
+        nullable: false,
+      },
       tension: {
         type: SchemaType.NUMBER,
         description:
@@ -44,7 +48,7 @@ function getModel() {
         nullable: false,
       },
     },
-    required: ["tension", "communicationStyle"],
+    required: ["pitchType", "tension", "communicationStyle"],
   };
 
   model = genAI.getGenerativeModel({
@@ -66,7 +70,7 @@ function getModel() {
  */
 export async function analyzeChat(
   messages: Message[],
-): Promise<ChatAnalysisResult> {
+): Promise<GptBasedResult> {
   if (messages.length === 0) {
     throw new Error("Messages array cannot be empty");
   }
@@ -82,22 +86,20 @@ export async function analyzeChat(
         ? `\n\nContext (Recent History):\n${historyMessages.map((m) => `${m.speaker}: ${m.text}`).join("\n")}`
         : "";
 
-    const prompt = `
-Analyze the following chat message and extract the tension level and communication style based on the provided schema.
-
-Input Text (${targetMessage.speaker}): "${targetMessage.text}"${historyText}
-
-Provide the output in JSON format.
-`;
+    const prompt = PITCH_CLASSIFICATION_PROMPT.replace(
+      "{speaker}",
+      targetMessage.speaker,
+    )
+      .replace("{text}", targetMessage.text)
+      .replace("{historyText}", historyText);
 
     const result = await model.generateContent(prompt);
     const response = result.response;
     const jsonText = response.text();
-
-    // Parse the JSON response
     const data = JSON.parse(jsonText);
 
     return {
+      pitchType: data.pitchType,
       tension: data.tension,
       communicationStyle: data.communicationStyle,
     };

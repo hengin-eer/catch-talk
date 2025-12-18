@@ -17,11 +17,12 @@ export type RuleBasedResult = {
 };
 
 export type GptBasedResult = {
-  type: PitchType | null;
-  course_grid: CourseGrid | null;
+  pitchType: PitchType; // 変化球
+  tension: number; // 会話のテンション -1.0（低い）〜1.0（高い）
+  communicationStyle: number; // コミュニケーションスタイル -1.0（議論・解決志向）〜1.0（共感・受容志向）
 };
 
-export type PitchType = "straight" | "curve" | "slider" | "fork" | "changeup";
+export type PitchType = "straight" | "slider" | "curve" | "knuckle" | "fork";
 
 export type CourseGrid =
   | "high-inside"
