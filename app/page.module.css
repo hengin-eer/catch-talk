@@ -46,44 +46,22 @@
 }
 
 .stage {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  justify-content: flex-start;
   align-items: center;
-  transform: translate(0, 40%);
 }
 
 .signboard {
-  position: relative;
-  padding: clamp(18px, 2vw, 32px) clamp(36px, 4vw, 80px);
-  border-radius: 28px;
-  background: linear-gradient(135deg, #d28c47, #a95c30 60%, #703c1f);
-  color: #ffe8c7;
-  box-shadow: 0 24px 36px rgba(78, 43, 16, 0.45);
-  border: 4px solid #4e2b10;
-  min-width: min(560px, 90vw);
-  animation: sway 6s ease-in-out infinite alternate;
+  width: min(600px, 90%);
 }
 
-.signboard h1 {
-  font-family: var(--font-handwriting), var(--font-playful), sans-serif;
-  font-size: clamp(48px, 8vw, 92px);
-  line-height: 1;
-  text-transform: none;
-  letter-spacing: 2px;
-}
-
-.signboard p {
-  margin-top: 12px;
-  font-size: clamp(16px, 2.4vw, 22px);
-  opacity: 0.85;
-}
-
-.rope {
-  position: absolute;
-  width: 20px;
-  height: 90px;
-  top: -90px;
+.signboard > img {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
 }
 
 .rope:first-of-type {
@@ -117,8 +95,6 @@
   padding: clamp(20px, 3vw, 36px);
   border-radius: 32px;
   background: #fff8ea;
-  border: 2px solid #be987b;
-  box-shadow: 0 24px 60px #be987b;
   display: flex;
   flex-direction: column;
   gap: clamp(20px, 3vw, 32px);
