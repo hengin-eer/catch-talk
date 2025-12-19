@@ -1,37 +1,13 @@
 "use client";
 
-import {
-  Environment,
-  OrbitControls,
-  PerspectiveCamera,
-  View,
-} from "@react-three/drei";
+import { OrbitControls, PerspectiveCamera, View } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import React, { Suspense, useCallback, useRef, useState } from "react";
-import { Park } from "./Park";
-import { PlayerBoy } from "./PlayerBoy";
-import { PlayerGirl } from "./PlayerGirl";
+import { useCallback, useRef, useState } from "react";
+import type { ActionName, CourseType, PitcherType } from "@/types/animation";
+import { SceneContent } from "./ScreenContent";
 
-// --- 型定義 ---
-type ActionName =
-  | "catch_before"
-  | "catch_LL"
-  | "catch_LM"
-  | "catch_LR"
-  | "catch_ML"
-  | "catch_MM"
-  | "catch_MR"
-  | "catch_UL"
-  | "catch_UM"
-  | "catch_UR"
-  | "miss"
-  | "normal"
-  | "throw"
-  | "throw_light";
-
-type PitcherType = "Boy" | "Girl";
-type CourseType = string;
-
+const PLAYER_DISTANCE = 50;
+const CATCH_BEFORE_FRAME = 160;
 const COURSES = [
   ["UL", "UM", "UR"],
   ["ML", "MM", "MR"],
@@ -39,36 +15,6 @@ const COURSES = [
 ];
 
 const framesToMs = (frames: number) => (frames / 60) * 1000;
-const PLAYER_DISTANCE = 50;
-const CATCH_BEFORE_FRAME = 160;
-
-// ★ポイント1: SceneContent を App の外に移動する
-// これにより、Appが再レンダリングされても3Dモデルが再生成（リセット）されなくなります。
-const SceneContent = ({
-  boyAnim,
-  girlAnim,
-}: {
-  boyAnim: ActionName;
-  girlAnim: ActionName;
-}) => (
-  <>
-    <ambientLight intensity={0.6} />
-    <directionalLight position={[5, 10, 5]} intensity={1} castShadow />
-    <Environment preset="city" />
-    <Suspense fallback={<p>3Dモデルの読み込み中</p>}>
-      <Park position={[0, -1, 0]} scale={3} />
-      <PlayerBoy
-        position={[-PLAYER_DISTANCE / 2, 0, 0]}
-        animationName={boyAnim}
-      />
-      <PlayerGirl
-        position={[PLAYER_DISTANCE / 2, 0, 0]}
-        animationName={girlAnim}
-        rotation={[0, -Math.PI, 0]}
-      />
-    </Suspense>
-  </>
-);
 
 export default function PitchingView() {
   const leftViewRef = useRef<HTMLDivElement>(null!);
