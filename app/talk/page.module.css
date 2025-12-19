@@ -1,0 +1,20 @@
+.page {
+  position: relative;
+
+  .bottomNavigation {
+    position: absolute;
+    right: 50%;
+    bottom: 20px;
+    transform: translateX(50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 12px;
+
+    > .messageBox {
+      > .chooseMicWarning {
+        width: 100%;
+        color: #c00;
+      }
+    }
+  }
+}
