@@ -9,8 +9,8 @@ import {
 import { Canvas } from "@react-three/fiber";
 import React, { Suspense, useCallback, useRef, useState } from "react";
 import { Park } from "./Park";
-import { PlayerBoy } from "./Player_boy";
-import { PlayerGirl } from "./Player_girl";
+import { PlayerBoy } from "./PlayerBoy";
+import { PlayerGirl } from "./PlayerGirl";
 
 // --- 型定義 ---
 type ActionName =
@@ -55,7 +55,7 @@ const SceneContent = ({
     <ambientLight intensity={0.6} />
     <directionalLight position={[5, 10, 5]} intensity={1} castShadow />
     <Environment preset="city" />
-    <Suspense fallback={null}>
+    <Suspense fallback={<p>3Dモデルの読み込み中</p>}>
       <Park position={[0, -1, 0]} scale={3} />
       <PlayerBoy
         position={[-PLAYER_DISTANCE / 2, 0, 0]}
@@ -70,7 +70,7 @@ const SceneContent = ({
   </>
 );
 
-export default function App() {
+export default function PitchingView() {
   const leftViewRef = useRef<HTMLDivElement>(null!);
   const rightViewRef = useRef<HTMLDivElement>(null!);
 
