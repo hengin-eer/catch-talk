@@ -1,4 +1,4 @@
-import { Sky } from "@react-three/drei";
+import { Html, Sky } from "@react-three/drei";
 import { Suspense } from "react";
 import type { ActionName } from "@/types/animation";
 import { MovingBall } from "./MovingBall";
@@ -6,7 +6,7 @@ import { Park } from "./Park";
 import { PlayerBoy } from "./PlayerBoy";
 import { PlayerGirl } from "./PlayerGirl";
 
-const PLAYER_DISTANCE = 50;
+const PLAYER_DISTANCE = 80;
 
 export const SceneContent = ({
   boyAnim,
@@ -21,7 +21,13 @@ export const SceneContent = ({
     <Sky sunPosition={[100, 20, 100]} turbidity={0.1} rayleigh={0.4} />
     <ambientLight intensity={0.8} />
     <directionalLight position={[10, 20, 10]} intensity={1.5} castShadow />
-    <Suspense fallback={<p>3Dモデルの読み込み中</p>}>
+    <Suspense
+      fallback={
+        <Html center>
+          <p style={{ color: "white" }}>3Dモデルの読み込み中...</p>
+        </Html>
+      }
+    >
       <Park position={[0, -1, 0]} scale={3} />
       <PlayerBoy
         position={[-PLAYER_DISTANCE / 2, 0, 0]}
