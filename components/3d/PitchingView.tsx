@@ -8,10 +8,16 @@ import { SceneContent } from "./ScreenContent";
 
 const PLAYER_DISTANCE = 50;
 const CATCH_BEFORE_FRAME = 160;
-const COURSES = [
-  ["UL", "UM", "UR"],
-  ["ML", "MM", "MR"],
-  ["LL", "LM", "LR"],
+const COURSES: CourseType[] = [
+  "UR",
+  "UM",
+  "UL",
+  "MR",
+  "MM",
+  "ML",
+  "LR",
+  "LM",
+  "LL",
 ];
 
 const framesToMs = (frames: number) => (frames / 60) * 1000;

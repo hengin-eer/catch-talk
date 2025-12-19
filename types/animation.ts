@@ -15,4 +15,14 @@ export type ActionName =
   | "throw_light";
 
 export type PitcherType = "Boy" | "Girl";
-export type CourseType = string;
+
+export type CourseType =
+  | "UL"
+  | "UM"
+  | "UR"
+  | "ML"
+  | "MM"
+  | "MR"
+  | "LL"
+  | "LM"
+  | "LR";
