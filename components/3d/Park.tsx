@@ -292,4 +292,4 @@ export function Park(props: React.JSX.IntrinsicElements["group"]) {
   );
 }
 
-useGLTF.preload("/park.glb");
+useGLTF.preload("/model/park.glb");
