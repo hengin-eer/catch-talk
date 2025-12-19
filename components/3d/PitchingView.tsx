@@ -1,13 +1,19 @@
 "use client";
 
-import { OrbitControls, PerspectiveCamera, View } from "@react-three/drei";
+import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useCallback, useRef, useState } from "react";
 import type { ActionName, CourseType, PitcherType } from "@/types/animation";
+import type { PitchType } from "@/types/game";
+import styles from "./PitchingView.module.css";
 import { SceneContent } from "./ScreenContent";
 
-const PLAYER_DISTANCE = 50;
-const CATCH_BEFORE_FRAME = 160;
+// --- 定数 ---
+const framesToMs = (frames: number) => (frames / 60) * 1000;
+const PLAYER_DISTANCE = 80;
+const CATCH_BEFORE_FRAME = 200;
+const THROW_BEFORE_FRAME = 180;
+
 const COURSES: CourseType[] = [
   "UL",
   "UM",
@@ -20,199 +26,141 @@ const COURSES: CourseType[] = [
   "LR",
 ];
 
-const framesToMs = (frames: number) => (frames / 60) * 1000;
+//変化球ごとの定数
+const PITCH_DATA: Record<
+  PitchType,
+  { name: string; speed: number; color: number }
+> = {
+  straight: { name: "ストレート", speed: 220, color: 0xffffff },
+  curve: { name: "カーブ", speed: 220, color: 0xffa500 },
+  slider: { name: "スライダー", speed: 220, color: 0xffff00 },
+  fork: { name: "フォーク", speed: 220, color: 0x00ffff },
+  knuckle: { name: "スネーク", speed: 220, color: 0x00ff00 },
+};
 
 export default function PitchingView() {
-  const leftViewRef = useRef<HTMLDivElement>(null!);
-  const rightViewRef = useRef<HTMLDivElement>(null!);
-
-  // アニメーション実行中かどうかを管理するRef
   const isAnimating = useRef(false);
 
   const [currentPitcher, setCurrentPitcher] = useState<PitcherType>("Boy");
-  const [selectedCourse, setSelectedCourse] = useState<CourseType>("MM");
+  const [selectedCourse, setSelectedCourse] = useState("MM");
+  const [selectedPitch, setSelectedPitch] = useState<PitchType>("straight");
   const [boyAnim, setBoyAnim] = useState<ActionName>("normal");
   const [girlAnim, setGirlAnim] = useState<ActionName>("normal");
+  const [ballActive, setBallActive] = useState(false);
 
   const runPitchingAction = useCallback(
-    (pitcher: PitcherType, course: CourseType) => {
-      if (isAnimating.current) return; // 実行中なら何もしない
+    (pitcher: PitcherType, course: string) => {
+      if (isAnimating.current) return;
       isAnimating.current = true;
+      setBallActive(false);
 
-      const isBoyPitcher = pitcher === "Boy";
-      const setThrowerAnim = isBoyPitcher ? setBoyAnim : setGirlAnim;
-      const setCatcherAnim = isBoyPitcher ? setGirlAnim : setBoyAnim;
+      const isBoy = pitcher === "Boy";
+      const setThrower = isBoy ? setBoyAnim : setGirlAnim;
+      const setCatcher = isBoy ? setGirlAnim : setBoyAnim;
 
-      // 1. 投球開始
-      setThrowerAnim("throw");
-      setCatcherAnim("catch_before");
+      setThrower("throw");
+      setCatcher("catch_before");
 
-      // 2. キャッチ動作への切り替え
       setTimeout(() => {
-        const catchAnimName = `catch_${course}` as ActionName;
-        setCatcherAnim(catchAnimName);
-        // アニメーション完了後にフラグを戻す（必要に応じて時間を調整）
+        setBallActive(true);
+      }, framesToMs(THROW_BEFORE_FRAME));
+
+      setTimeout(() => {
+        setCatcher(`catch_${course}` as ActionName);
         setTimeout(() => {
           isAnimating.current = false;
-        }, 1000);
+        }, 1500);
       }, framesToMs(CATCH_BEFORE_FRAME));
     },
     [],
   );
 
+  //投球モーションののリセット
   const handleReset = () => {
     isAnimating.current = false;
+    setBallActive(false);
     setBoyAnim("normal");
     setGirlAnim("normal");
   };
 
   return (
-    <div
-      style={{
-        width: "100vw",
-        height: "100vh",
-        position: "relative",
-        display: "flex",
-        overflow: "hidden",
-      }}
-    >
-      {/* 左：女子視点エリア */}
-      <div ref={leftViewRef} style={{ flex: 1, height: "100%" }} />
-
-      {/* 右：男子視点エリア */}
-      <div
-        ref={rightViewRef}
-        style={{ flex: 1, height: "100%", borderLeft: "2px solid #333" }}
-      />
-
-      {/* UIパネル */}
-      <div
-        style={{
-          position: "absolute",
-          top: 20,
-          left: "50%",
-          transform: "translateX(-50%)",
-          zIndex: 10,
-          background: "rgba(255,255,255,0.9)",
-          padding: "20px",
-          borderRadius: "12px",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
-          display: "flex",
-          flexDirection: "column",
-          gap: "15px",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            gap: "20px",
-          }}
-        >
-          <span style={{ fontWeight: "bold" }}>Pitcher</span>
+    <div className={styles.container}>
+      {/* 操作パネル */}
+      <div className={styles.controlPanel}>
+        <div className={styles.panelHeader}>
+          <b>Pitcher Control</b>
           <button
             type="button"
+            className={styles.toggleButton}
             onClick={() => {
-              setCurrentPitcher((prev) => (prev === "Boy" ? "Girl" : "Boy"));
+              setCurrentPitcher((p) => (p === "Boy" ? "Girl" : "Boy"));
               handleReset();
-            }}
-            style={{
-              padding: "6px 12px",
-              background: "#333",
-              color: "white",
-              border: "none",
-              borderRadius: "20px",
-              cursor: "pointer",
             }}
           >
             {currentPitcher === "Boy" ? "👦 Boy" : "👧 Girl"}
           </button>
         </div>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 45px)",
-            gap: "6px",
-          }}
-        >
-          {COURSES.flat().map((course) => (
+        <div className={styles.pitchGrid}>
+          {(Object.keys(PITCH_DATA) as PitchType[]).map((t) => (
             <button
               type="button"
-              key={course}
+              key={t}
               onClick={() => {
-                setSelectedCourse(course);
+                setSelectedPitch(t);
                 handleReset();
               }}
-              style={{
-                width: "45px",
-                height: "45px",
-                background: selectedCourse === course ? "#ff4757" : "#e0e0e0",
-                color: selectedCourse === course ? "#fff" : "#333",
-                border: "none",
-                borderRadius: "6px",
-                cursor: "pointer",
-              }}
+              className={`${styles.pitchButton} ${
+                selectedPitch === t ? styles.pitchButtonActive : ""
+              }`}
             >
-              {course}
+              {PITCH_DATA[t].name}
             </button>
           ))}
         </div>
-
+        <div className={styles.courseGrid}>
+          {COURSES.map((c) => (
+            <button
+              type="button"
+              key={c}
+              onClick={() => {
+                setSelectedCourse(c);
+                handleReset();
+              }}
+              className={`${styles.courseButton} ${
+                selectedCourse === c ? styles.courseButtonActive : ""
+              }`}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
         <button
           type="button"
+          className={styles.actionButton}
           onClick={() => runPitchingAction(currentPitcher, selectedCourse)}
-          style={{
-            padding: "12px",
-            background: "#2196F3",
-            color: "white",
-            border: "none",
-            borderRadius: "8px",
-            cursor: "pointer",
-            fontWeight: "bold",
-          }}
         >
-          投球開始！
+          PITCH!
         </button>
       </div>
 
-      <Canvas
-        shadows
-        style={{ position: "absolute", top: 0, left: 0, pointerEvents: "none" }}
-      >
-        {/* 左側: 女子視点 */}
-        <View track={leftViewRef}>
-          <PerspectiveCamera
-            makeDefault
-            position={[PLAYER_DISTANCE / 2 + 15, 8, -5]}
-            fov={50}
-          />
-          <OrbitControls
-            makeDefault
-            target={[-PLAYER_DISTANCE / 2, 0, 0]}
-            enabled={false}
-          />
-
-          <SceneContent boyAnim={boyAnim} girlAnim={girlAnim} />
-        </View>
-
-        {/* 右側: 男子視点 */}
-        <View track={rightViewRef}>
-          <PerspectiveCamera
-            makeDefault
-            position={[-(PLAYER_DISTANCE / 2 + 15), 8, 5]}
-            fov={50}
-          />
-          <OrbitControls
-            makeDefault
-            target={[PLAYER_DISTANCE / 2, 0, 0]}
-            enabled={false}
-          />
-          <SceneContent boyAnim={boyAnim} girlAnim={girlAnim} />
-        </View>
-
-        <View.Port />
+      {/* 3Dの描画 */}
+      <Canvas shadows className={styles.canvas}>
+        <PerspectiveCamera
+          makeDefault
+          position={[PLAYER_DISTANCE / 2 + 10, 8, -5]}
+          fov={50}
+        />
+        <OrbitControls makeDefault target={[0, 2, 0]} enabled={false} />
+        <SceneContent
+          boyAnim={boyAnim}
+          girlAnim={girlAnim}
+          ballProps={{
+            pitcher: currentPitcher,
+            course: selectedCourse,
+            pitchType: selectedPitch,
+            active: ballActive,
+          }}
+        />
       </Canvas>
     </div>
   );
