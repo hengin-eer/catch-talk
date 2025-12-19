@@ -3,11 +3,11 @@
 import { useAnimations, useGLTF } from "@react-three/drei";
 import { useGraph } from "@react-three/fiber";
 import React, { useEffect } from "react";
-/* src/components/Player_girl.tsx */
+/* src/components/Player_boy.tsx */
 import * as THREE from "three";
 import { type GLTF, SkeletonUtils } from "three-stdlib";
 
-// アニメーション名の型定義（自動生成されたものをそのまま利用）
+// アニメーション名の定義
 type ActionName =
   | "catch_before"
   | "catch_LL"
@@ -31,8 +31,10 @@ interface GLTFAction extends THREE.AnimationClip {
 type GLTFResult = GLTF & {
   nodes: {
     body: THREE.SkinnedMesh;
-    Sphere: THREE.SkinnedMesh;
-    Sphere_1: THREE.SkinnedMesh;
+    Mesh: THREE.SkinnedMesh;
+    Mesh_1: THREE.SkinnedMesh;
+    Mesh_2: THREE.SkinnedMesh;
+    Mesh_3: THREE.SkinnedMesh;
     left_foot: THREE.SkinnedMesh;
     left_hand: THREE.SkinnedMesh;
     right_foot: THREE.SkinnedMesh;
@@ -47,7 +49,9 @@ type GLTFResult = GLTF & {
   materials: {
     body: THREE.MeshStandardMaterial;
     face: THREE.MeshStandardMaterial;
-    brown: THREE.MeshStandardMaterial;
+    hair: THREE.MeshStandardMaterial;
+    white: THREE.MeshStandardMaterial;
+    blue: THREE.MeshStandardMaterial;
     foot: THREE.MeshStandardMaterial;
     hand: THREE.MeshStandardMaterial;
     globe_main: THREE.MeshStandardMaterial;
@@ -57,19 +61,19 @@ type GLTFResult = GLTF & {
   animations: GLTFAction[];
 };
 
-// Propsの型拡張：animationNameを受け取れるようにする
-type PlayerGirlProps = React.JSX.IntrinsicElements["group"] & {
-  animationName?: ActionName; // 型安全のため ActionName を指定
+// Propsの定義：animationNameを受け取れるように拡張
+type PlayerBoyProps = React.JSX.IntrinsicElements["group"] & {
+  animationName?: ActionName;
 };
 
-export function PlayerGirl({
+export function PlayerBoy({
   animationName = "normal",
   ...props
-}: PlayerGirlProps) {
+}: PlayerBoyProps) {
   const group = React.useRef<THREE.Group>(null);
-  const { scene, animations } = useGLTF("/model/player_girl.glb");
+  const { scene, animations } = useGLTF("/model/player_boy.glb");
 
-  // 複数配置対応：シーンをクローンして独立したスケルトンを作成
+  // シーンのクローン（複数配置対応）
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as unknown as GLTFResult;
 
@@ -89,7 +93,7 @@ export function PlayerGirl({
 
       action.reset().fadeIn(fadeTime);
 
-      //'throw' (投げる) または 'catch' (捕る) 系の動作なら1回再生で止める
+      // 'throw' (投げる) または 'catch' (捕る) 系の動作なら1回再生で止める
       if (
         animationName === "throw" ||
         (animationName &&
@@ -126,16 +130,28 @@ export function PlayerGirl({
           />
           <group name="face1">
             <skinnedMesh
-              name="Sphere"
-              geometry={nodes.Sphere.geometry}
+              name="Mesh"
+              geometry={nodes.Mesh.geometry}
               material={materials.face}
-              skeleton={nodes.Sphere.skeleton}
+              skeleton={nodes.Mesh.skeleton}
             />
             <skinnedMesh
-              name="Sphere_1"
-              geometry={nodes.Sphere_1.geometry}
-              material={materials.brown}
-              skeleton={nodes.Sphere_1.skeleton}
+              name="Mesh_1"
+              geometry={nodes.Mesh_1.geometry}
+              material={materials.hair}
+              skeleton={nodes.Mesh_1.skeleton}
+            />
+            <skinnedMesh
+              name="Mesh_2"
+              geometry={nodes.Mesh_2.geometry}
+              material={materials.white}
+              skeleton={nodes.Mesh_2.skeleton}
+            />
+            <skinnedMesh
+              name="Mesh_3"
+              geometry={nodes.Mesh_3.geometry}
+              material={materials.blue}
+              skeleton={nodes.Mesh_3.skeleton}
             />
           </group>
           <skinnedMesh
@@ -188,4 +204,4 @@ export function PlayerGirl({
   );
 }
 
-useGLTF.preload("/player_girl.glb");
+useGLTF.preload("/model/player_boy.glb");

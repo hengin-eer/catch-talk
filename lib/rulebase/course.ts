@@ -1,39 +1,36 @@
-import type { ChatAnalysisResult } from "@/app/actions/analyzeChat";
-import type { CourseGrid } from "@/types/game";
+import type { CourseType } from "@/types/animation";
+import type { GptBasedResult } from "@/types/game";
 
-export function mapToCourseGrid(
-  analysis: ChatAnalysisResult | null,
-): CourseGrid {
-  if (!analysis) return "mid-center";
+export function mapToCourseType(analysis: GptBasedResult | null): CourseType {
+  if (!analysis) return "MM";
 
   const { tension, communicationStyle } = analysis;
 
-  // Y軸: Tension (High/Mid/Low)
-  // -1.0 ~ -0.33 -> Low
-  // -0.33 ~ 0.33 -> Mid
-  // 0.33 ~ 1.0 -> High
-  let yZone: "low" | "mid" | "high";
+  // Y軸: Tension (High/Mid/Low) -> U/M/L
+  // -1.0 ~ -0.33 -> Low (L)
+  // -0.33 ~ 0.33 -> Mid (M)
+  // 0.33 ~ 1.0 -> High (U)
+  let yChar: "U" | "M" | "L";
   if (tension < -0.33) {
-    yZone = "low";
+    yChar = "L";
   } else if (tension > 0.33) {
-    yZone = "high";
+    yChar = "U";
   } else {
-    yZone = "mid";
+    yChar = "M";
   }
 
-  // X軸: Communication Style (Inside/Center/Outside)
-  // -1.0 ~ -0.33 -> Inside (Discussion)
-  // -0.33 ~ 0.33 -> Center
-  // 0.33 ~ 1.0 -> Outside (Empathy)
-  // ※ Inside/Outsideの割り当ては仮定。
-  let xZone: "inside" | "center" | "outside";
+  // X軸: Communication Style (Inside/Center/Outside) -> L/M/R
+  // -1.0 ~ -0.33 -> Inside (Discussion) -> L
+  // -0.33 ~ 0.33 -> Center -> M
+  // 0.33 ~ 1.0 -> Outside (Empathy) -> R
+  let xChar: "L" | "M" | "R";
   if (communicationStyle < -0.33) {
-    xZone = "inside";
+    xChar = "L";
   } else if (communicationStyle > 0.33) {
-    xZone = "outside";
+    xChar = "R";
   } else {
-    xZone = "center";
+    xChar = "M";
   }
 
-  return `${yZone}-${xZone}` as CourseGrid;
+  return `${yChar}${xChar}` as CourseType;
 }

@@ -3,7 +3,7 @@
 import { useAtom } from "jotai";
 import { useEffect, useRef, useState } from "react";
 import { analyzeChat } from "@/app/actions/analyzeChat";
-import { mapToCourseGrid } from "@/lib/rulebase/course";
+import { mapToCourseType } from "@/lib/rulebase/course";
 import { calculateBallScale } from "@/lib/rulebase/scale";
 import { isSilent } from "@/lib/rulebase/silence";
 import { SpeedCalculator } from "@/lib/rulebase/speed";
@@ -79,7 +79,7 @@ export function useChat() {
         is_silent: ruleResult.is_silent,
         is_fire: ruleResult.is_fire,
         ball_scale: ruleResult.ball_scale,
-        course: "mid-center",
+        course: "MM",
         text: packet.text,
         speaker: packet.speaker,
       };
@@ -104,7 +104,7 @@ export function useChat() {
         console.log("Gemini Analysis:", analysis);
 
         if (analysis) {
-          const course = mapToCourseGrid(analysis);
+          const course = mapToCourseType(analysis);
 
           setPitchData3D((prev) =>
             prev.map((p) =>

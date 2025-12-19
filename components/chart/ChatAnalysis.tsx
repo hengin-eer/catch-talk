@@ -3,7 +3,7 @@
 import { useAtom } from "jotai";
 import { pitchData3DState, pitchDataChartState } from "@/state/gameData";
 import type { PitchType } from "@/types/game";
-import styles from "./ChatAnalysisDebug.module.css";
+import styles from "./ChatAnalysis.module.css";
 
 const PITCH_SYMBOLS: Record<PitchType, string> = {
   straight: "o",
