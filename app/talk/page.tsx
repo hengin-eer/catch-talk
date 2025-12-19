@@ -18,20 +18,20 @@ export default function TalkPage() {
       <PitchingView />
 
       <div className={styles.bottomNavigation}>
-        <div className={styles.messageBox}>
-          {!canStart && (
+        {!canStart && (
+          <div className={styles.messageBox}>
             <p className={styles.chooseMicWarning}>
               おっと！ まずは使うマイクを2本選んでください！
             </p>
-          )}
-        </div>
+          </div>
+        )}
 
-        {error && <p className={styles.chooseMicWarning}>{error}</p>}
+        {error && <p className={styles.errorMessages}>エラー： {error}</p>}
 
         <div className={styles.buttonNavigation}>
           <button
             type="button"
-            className={styles.toggleButton}
+            className={`${styles.toggleButton} ${running && styles.active}`}
             disabled={!running && !canStart}
             onClick={() => setRunning(!running)}
           >
