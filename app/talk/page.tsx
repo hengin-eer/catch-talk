@@ -1,6 +1,7 @@
 "use client";
 
 import { useAtomValue } from "jotai";
+import { Mic, MicOff, RotateCcw } from "lucide-react";
 import PitchingView from "@/components/3d/PitchingView";
 import { ChatAnalysisDebug } from "@/components/chart/ChatAnalysis";
 import { messagesState } from "@/state/gameData";
@@ -27,27 +28,30 @@ export default function TalkPage() {
 
         {error && <p className={styles.chooseMicWarning}>{error}</p>}
 
-        <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+        <div className={styles.buttonNavigation}>
           <button
             type="button"
+            className={styles.startButton}
             disabled={!canStart || running}
             onClick={() => setRunning(true)}
           >
-            Start
+            <Mic />
           </button>
           <button
             type="button"
+            className={styles.stopButton}
             disabled={!running}
             onClick={() => setRunning(false)}
           >
-            Stop
+            <MicOff className={styles.micOff} />
           </button>
           <button
             type="button"
+            className={styles.clearButton}
             disabled={running || messages.length === 0}
             onClick={clearLogs}
           >
-            Clear
+            <RotateCcw className={styles.rotateCcw} />
           </button>
         </div>
       </div>

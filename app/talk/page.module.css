@@ -12,8 +12,22 @@
 
     > .messageBox {
       > .chooseMicWarning {
+        margin-bottom: 16px;
         width: 100%;
         color: #c00;
+      }
+    }
+
+    > .buttonNavigation {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+
+      > .startButton,
+      > .stopButton,
+      > .clearButton {
+        padding: 8px 16px;
+        border-radius: 12px;
       }
     }
   }
