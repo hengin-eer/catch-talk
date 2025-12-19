@@ -1,6 +1,7 @@
 "use client";
 
 import { useAtomValue } from "jotai";
+import PitchingView from "@/components/3d/PitchingView";
 import { ChatAnalysisDebug } from "@/components/debug/ChatAnalysisDebug";
 import { messagesState } from "@/state/gameData";
 import { useChat } from "./hooks/useChat";
@@ -15,6 +16,8 @@ export default function TalkPage() {
       <h1 style={{ fontSize: 18, fontWeight: 700 }}>
         Talk (useChat Integration)
       </h1>
+      {/* 3Dアニメーションの実装 */}
+      <PitchingView />
 
       {!canStart && (
         <p style={{ color: "#c00" }}>
