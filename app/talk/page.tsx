@@ -2,7 +2,7 @@
 
 import { useAtomValue } from "jotai";
 import PitchingView from "@/components/3d/PitchingView";
-import { ChatAnalysisDebug } from "@/components/debug/ChatAnalysisDebug";
+import { ChatAnalysisDebug } from "@/components/chart/ChatAnalysis";
 import { messagesState } from "@/state/gameData";
 import { useChat } from "./hooks/useChat";
 
