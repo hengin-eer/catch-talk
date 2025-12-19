@@ -31,19 +31,11 @@ export default function TalkPage() {
         <div className={styles.buttonNavigation}>
           <button
             type="button"
-            className={styles.startButton}
-            disabled={!canStart || running}
-            onClick={() => setRunning(true)}
+            className={styles.toggleButton}
+            disabled={!running && !canStart}
+            onClick={() => setRunning(!running)}
           >
-            <Mic />
-          </button>
-          <button
-            type="button"
-            className={styles.stopButton}
-            disabled={!running}
-            onClick={() => setRunning(false)}
-          >
-            <MicOff className={styles.micOff} />
+            {running ? <MicOff className={styles.micOff} /> : <Mic />}
           </button>
           <button
             type="button"
