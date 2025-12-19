@@ -1,12 +1,11 @@
 import { Html, Sky } from "@react-three/drei";
 import { Suspense } from "react";
+import { PLAYER_DISTANCE } from "@/constants/animation";
 import type { ActionName } from "@/types/animation";
 import { MovingBall } from "./MovingBall";
 import { Park } from "./Park";
 import { PlayerBoy } from "./PlayerBoy";
 import { PlayerGirl } from "./PlayerGirl";
-
-const PLAYER_DISTANCE = 80;
 
 export const SceneContent = ({
   boyAnim,

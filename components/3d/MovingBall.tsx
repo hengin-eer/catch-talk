@@ -2,42 +2,21 @@ import { Line } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef, useState } from "react";
 import * as THREE from "three";
+import {
+  BALL_SCALE,
+  COURSE_OFFSETS,
+  PITCH_DATA,
+  PLAYER_DISTANCE,
+  SEPARATE_NUM,
+  TRAIL_WIDTH,
+  ZONE_CENTER_Y,
+  ZONE_H,
+  ZONE_W,
+} from "@/constants/animation";
 import { getDeviation } from "@/lib/3d/getDeviation";
 import type { PitcherType } from "@/types/animation";
 import type { PitchType } from "@/types/game";
 import { BaseBall } from "./Baseball";
-
-const PLAYER_DISTANCE = 80;
-const SEPARATE_NUM = 20;
-
-const BALL_SCALE = 0.4;
-const ZONE_W = 1.5;
-const ZONE_H = 1.5;
-const ZONE_CENTER_Y = 3.5;
-const TRAIL_WIDTH = 10;
-
-const PITCH_DATA: Record<
-  PitchType,
-  { name: string; speed: number; color: number }
-> = {
-  straight: { name: "ストレート", speed: 220, color: 0xffffff },
-  curve: { name: "カーブ", speed: 220, color: 0xffa500 },
-  slider: { name: "スライダー", speed: 220, color: 0xffff00 },
-  fork: { name: "フォーク", speed: 220, color: 0x00ffff },
-  knuckle: { name: "スネーク", speed: 220, color: 0x00ff00 },
-};
-
-const COURSE_OFFSETS: Record<string, { x: number; y: number }> = {
-  UL: { x: 1, y: 1 },
-  UM: { x: 0, y: 1 },
-  UR: { x: -1, y: 1 },
-  ML: { x: 1, y: 0 },
-  MM: { x: 0, y: 0 },
-  MR: { x: -1, y: 0 },
-  LL: { x: 1, y: -1 },
-  LM: { x: 0, y: -1 },
-  LR: { x: -1, y: -1 },
-};
 
 export const MovingBall = ({
   pitcher,

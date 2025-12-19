@@ -3,40 +3,20 @@
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useCallback, useRef, useState } from "react";
-import type { ActionName, CourseType, PitcherType } from "@/types/animation";
+import {
+  CATCH_BEFORE_FRAME,
+  COURSES,
+  framesToMs,
+  PITCH_DATA,
+  PLAYER_DISTANCE,
+  THROW_BEFORE_FRAME,
+} from "@/constants/animation";
+import type { ActionName, PitcherType } from "@/types/animation";
 import type { PitchType } from "@/types/game";
 import styles from "./PitchingView.module.css";
 import { SceneContent } from "./ScreenContent";
 
 // --- 定数 ---
-const framesToMs = (frames: number) => (frames / 60) * 1000;
-const PLAYER_DISTANCE = 80;
-const CATCH_BEFORE_FRAME = 200;
-const THROW_BEFORE_FRAME = 180;
-
-const COURSES: CourseType[] = [
-  "UL",
-  "UM",
-  "UR",
-  "ML",
-  "MM",
-  "MR",
-  "LL",
-  "LM",
-  "LR",
-];
-
-//変化球ごとの定数
-const PITCH_DATA: Record<
-  PitchType,
-  { name: string; speed: number; color: number }
-> = {
-  straight: { name: "ストレート", speed: 220, color: 0xffffff },
-  curve: { name: "カーブ", speed: 220, color: 0xffa500 },
-  slider: { name: "スライダー", speed: 220, color: 0xffff00 },
-  fork: { name: "フォーク", speed: 220, color: 0x00ffff },
-  knuckle: { name: "スネーク", speed: 220, color: 0x00ff00 },
-};
 
 export default function PitchingView() {
   const isAnimating = useRef(false);
