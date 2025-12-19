@@ -2,6 +2,7 @@
 
 import { useAtom } from "jotai";
 import { Caveat, Fredoka } from "next/font/google";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { MicDeviceStateType } from "@/state/micDeviceState";
@@ -220,10 +221,7 @@ export default function Home() {
       <main className={styles.main}>
         <section className={styles.stage}>
           <div className={styles.signboard}>
-            <span className={styles.rope} aria-hidden="true" />
-            <span className={styles.rope} aria-hidden="true" />
-            <h1>Catch Talk</h1>
-            <p>マイクを２本接続してスタートボタンを押してね</p>
+            <Image src="/signboard.png" alt="" width={1167} height={379} />
           </div>
         </section>
 
