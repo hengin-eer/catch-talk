@@ -1,3 +1,5 @@
+import type { CourseType } from "./animation";
+
 export type MsgPacketType = {
   uuid: string; // UUIDv7
   speaker: "player1" | "player2";
@@ -24,17 +26,6 @@ export type GptBasedResult = {
 
 export type PitchType = "straight" | "slider" | "curve" | "knuckle" | "fork";
 
-export type CourseGrid =
-  | "high-inside"
-  | "high-center"
-  | "high-outside"
-  | "mid-inside"
-  | "mid-center"
-  | "mid-outside"
-  | "low-inside"
-  | "low-center"
-  | "low-outside";
-
 type BasePitchData = {
   uuid: string; // UUIDv7
   speed: number; // 球速 (km/h)
@@ -50,7 +41,7 @@ type BasePitchData = {
  * 3Dモデル用
  */
 export type PitchData3D = BasePitchData & {
-  course: CourseGrid;
+  course: CourseType;
 };
 
 /**
