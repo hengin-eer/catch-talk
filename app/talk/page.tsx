@@ -35,7 +35,7 @@ export default function TalkPage() {
             disabled={!running && !canStart}
             onClick={() => setRunning(!running)}
           >
-            {running ? <MicOff className={styles.micOff} /> : <Mic />}
+            {running ? <Mic /> : <MicOff className={styles.micOff} />}
           </button>
           <button
             type="button"
