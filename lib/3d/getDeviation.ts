@@ -26,6 +26,7 @@ export const getDeviation = (
     let d = 0;
     if (t > 0.8) d = 50 * (t - 0.5) ** 2 * (1 - t);
     dev.y = 2 * t * (1 - t) - d;
-  } else if (type === "knuckle") dev.z = Math.sin(t * Math.PI * 2) * 10 * side;
+  } else if (type === "knuckle")
+    dev.z = (Math.sin(t * Math.PI * 2) + Math.sin(t * Math.PI * 6)) * 4 * side;
   return dev;
 };
