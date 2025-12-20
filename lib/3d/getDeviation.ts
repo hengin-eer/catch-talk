@@ -24,9 +24,8 @@ export const getDeviation = (
     if (t < 0.9) dev.z = 30 * (1 / SEPARATE_NUM) * side;
   } else if (type === "fork") {
     let d = 0;
-    if (t > 0.7) d = 50 * (t - 0.5) ** 2 * (1 - t);
+    if (t > 0.8) d = 50 * (t - 0.5) ** 2 * (1 - t);
     dev.y = 2 * t * (1 - t) - d;
-  } else if (type === "knuckle")
-    dev.x = (Math.sin(t * Math.PI * 2) + Math.sin(t * Math.PI * 4)) * 4 * side;
+  } else if (type === "knuckle") dev.z = Math.sin(t * Math.PI * 2) * 10 * side;
   return dev;
 };
