@@ -1,10 +1,12 @@
 "use client";
 
 import { useAtomValue } from "jotai";
+import { Mic, MicOff, RotateCcw } from "lucide-react";
 import PitchingView from "@/components/3d/PitchingView";
 import { ChatAnalysisDebug } from "@/components/chart/ChatAnalysis";
 import { messagesState } from "@/state/gameData";
 import { useChat } from "./hooks/useChat";
+import styles from "./page.module.css";
 
 export default function TalkPage() {
   const messages = useAtomValue(messagesState);
@@ -12,53 +14,41 @@ export default function TalkPage() {
     useChat();
 
   return (
-    <div style={{ padding: 16 }}>
-      <h1 style={{ fontSize: 18, fontWeight: 700 }}>
-        Talk (useChat Integration)
-      </h1>
-      {/* 3Dアニメーションの実装 */}
+    <main className={styles.page}>
       <PitchingView />
 
-      {!canStart && (
-        <p style={{ color: "#c00" }}>
-          mic1/mic2 が未選択。先にトップ画面でマイクを選択してから来る想定。
-        </p>
-      )}
+      <div className={styles.bottomNavigation}>
+        {!canStart && (
+          <div className={styles.messageBox}>
+            <p className={styles.chooseMicWarning}>
+              おっと！ まずは使うマイクを2本選んでください！
+            </p>
+          </div>
+        )}
 
-      {error && <p style={{ color: "#c00" }}>{error}</p>}
+        {error && <p className={styles.errorMessages}>エラー： {error}</p>}
 
-      <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
-        <button
-          type="button"
-          disabled={!canStart || running}
-          onClick={() => setRunning(true)}
-        >
-          Start
-        </button>
-        <button
-          type="button"
-          disabled={!running}
-          onClick={() => setRunning(false)}
-        >
-          Stop
-        </button>
-        <button
-          type="button"
-          disabled={running || messages.length === 0}
-          onClick={clearLogs}
-        >
-          Clear
-        </button>
-      </div>
-
-      <div style={{ marginTop: 16 }}>
-        <h2 style={{ fontSize: 14, fontWeight: 700 }}>Messages</h2>
-        <p style={{ fontSize: 12, color: "#666" }}>
-          ※デバッグ表示は右下のパネルを確認してください
-        </p>
+        <div className={styles.buttonNavigation}>
+          <button
+            type="button"
+            className={`${styles.toggleButton} ${running && styles.active}`}
+            disabled={!running && !canStart}
+            onClick={() => setRunning(!running)}
+          >
+            {running ? <MicOff className={styles.micOff} /> : <Mic />}
+          </button>
+          <button
+            type="button"
+            className={styles.clearButton}
+            disabled={running || messages.length === 0}
+            onClick={clearLogs}
+          >
+            <RotateCcw className={styles.rotateCcw} />
+          </button>
+        </div>
       </div>
 
       <ChatAnalysisDebug isSilent={isSilent} />
-    </div>
+    </main>
   );
 }

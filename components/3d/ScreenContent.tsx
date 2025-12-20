@@ -23,7 +23,16 @@ export const SceneContent = ({
     <Suspense
       fallback={
         <Html center>
-          <p style={{ color: "white" }}>3Dモデルの読み込み中...</p>
+          <p
+            style={{
+              color: "black",
+              textAlign: "center",
+              width: "max-content",
+            }}
+          >
+            {/* ローディングアニメーションなど、リッチなUIを考えておく/*/}
+            3Dモデルの読み込み中...
+          </p>
         </Html>
       }
     >

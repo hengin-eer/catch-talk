@@ -2,24 +2,24 @@
 
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { useCallback, useRef, useState } from "react";
+import { useAtom } from "jotai";
+import { useEffect, useRef, useState } from "react";
 import {
   CATCH_BEFORE_FRAME,
-  COURSES,
   framesToMs,
-  PITCH_DATA,
   PLAYER_DISTANCE,
   THROW_BEFORE_FRAME,
 } from "@/constants/animation";
+import { pitchData3DState } from "@/state/gameData";
 import type { ActionName, PitcherType } from "@/types/animation";
 import type { PitchType } from "@/types/game";
 import styles from "./PitchingView.module.css";
 import { SceneContent } from "./ScreenContent";
 
-// --- 定数 ---
-
 export default function PitchingView() {
-  const isAnimating = useRef(false);
+  const [pitchData3D] = useAtom(pitchData3DState);
+  const lastPitchIdRef = useRef<string | null>(null);
+  const timerRefs = useRef<NodeJS.Timeout[]>([]);
 
   const [currentPitcher, setCurrentPitcher] = useState<PitcherType>("Boy");
   const [selectedCourse, setSelectedCourse] = useState("MM");
@@ -28,12 +28,24 @@ export default function PitchingView() {
   const [girlAnim, setGirlAnim] = useState<ActionName>("normal");
   const [ballActive, setBallActive] = useState(false);
 
-  const runPitchingAction = useCallback(
-    (pitcher: PitcherType, course: string) => {
-      if (isAnimating.current) return;
-      isAnimating.current = true;
-      setBallActive(false);
+  // NOTE: タイマーのクリーンアップ
+  const clearAllTimers = () => {
+    timerRefs.current.forEach((id) => {
+      clearTimeout(id);
+    });
+    timerRefs.current = [];
+  };
 
+  const runPitchingAction = (pitcher: PitcherType, course: string) => {
+    // 既存のアニメーションタイマーを全てキャンセル
+    clearAllTimers();
+    // 強制的に初期状態へリセット（連続実行時のため）
+    setBallActive(false);
+    setBoyAnim("normal");
+    setGirlAnim("normal");
+    // 少し待ってから開始しないと、Reactのバッチ処理で状態更新が相殺される可能性があるため
+    // requestAnimationFrame等を使うのが理想だが、ここではsetTimeout(0)で次サイクルへ回す
+    const startTimer = setTimeout(() => {
       const isBoy = pitcher === "Boy";
       const setThrower = isBoy ? setBoyAnim : setGirlAnim;
       const setCatcher = isBoy ? setGirlAnim : setBoyAnim;
@@ -41,89 +53,56 @@ export default function PitchingView() {
       setThrower("throw");
       setCatcher("catch_before");
 
-      setTimeout(() => {
+      const ballTimer = setTimeout(() => {
         setBallActive(true);
       }, framesToMs(THROW_BEFORE_FRAME));
 
-      setTimeout(() => {
+      const catchTimer = setTimeout(() => {
         setCatcher(`catch_${course}` as ActionName);
-        setTimeout(() => {
-          isAnimating.current = false;
+        const endTimer = setTimeout(() => {
+          setThrower("normal");
+          setCatcher("normal");
+          setBallActive(false);
         }, 1500);
+        timerRefs.current.push(endTimer);
       }, framesToMs(CATCH_BEFORE_FRAME));
-    },
-    [],
-  );
 
-  //投球モーションののリセット
-  const handleReset = () => {
-    isAnimating.current = false;
-    setBallActive(false);
-    setBoyAnim("normal");
-    setGirlAnim("normal");
+      timerRefs.current.push(ballTimer, catchTimer);
+    }, 0);
+
+    timerRefs.current.push(startTimer);
   };
+
+  // 投球データの監視とアニメーション実行
+  // biome-ignore lint/correctness/useExhaustiveDependencies: React Compiler handles memoization
+  useEffect(() => {
+    const latestPitch = pitchData3D[0];
+    if (!latestPitch) return;
+    // 新しい投球データが来た場合のみ実行
+    if (latestPitch.uuid !== lastPitchIdRef.current) {
+      lastPitchIdRef.current = latestPitch.uuid;
+      // パラメータのマッピング
+      const nextPitcher: PitcherType =
+        latestPitch.speaker === "player1" ? "Girl" : "Boy";
+      const nextCourse = latestPitch.course;
+      const nextPitchType = latestPitch.type;
+      // UIステートを更新
+      setCurrentPitcher(nextPitcher);
+      setSelectedCourse(nextCourse);
+      setSelectedPitch(nextPitchType);
+      // アニメーション実行
+      runPitchingAction(nextPitcher, nextCourse);
+    }
+  }, [pitchData3D]);
+
+  // コンポーネントのアンマウント時にタイマーをクリア
+  // biome-ignore lint/correctness/useExhaustiveDependencies: React Compiler handles memoization
+  useEffect(() => {
+    return () => clearAllTimers();
+  }, []);
 
   return (
     <div className={styles.container}>
-      {/* 操作パネル */}
-      <div className={styles.controlPanel}>
-        <div className={styles.panelHeader}>
-          <b>Pitcher Control</b>
-          <button
-            type="button"
-            className={styles.toggleButton}
-            onClick={() => {
-              setCurrentPitcher((p) => (p === "Boy" ? "Girl" : "Boy"));
-              handleReset();
-            }}
-          >
-            {currentPitcher === "Boy" ? "👦 Boy" : "👧 Girl"}
-          </button>
-        </div>
-        <div className={styles.pitchGrid}>
-          {(Object.keys(PITCH_DATA) as PitchType[]).map((t) => (
-            <button
-              type="button"
-              key={t}
-              onClick={() => {
-                setSelectedPitch(t);
-                handleReset();
-              }}
-              className={`${styles.pitchButton} ${
-                selectedPitch === t ? styles.pitchButtonActive : ""
-              }`}
-            >
-              {PITCH_DATA[t].name}
-            </button>
-          ))}
-        </div>
-        <div className={styles.courseGrid}>
-          {COURSES.map((c) => (
-            <button
-              type="button"
-              key={c}
-              onClick={() => {
-                setSelectedCourse(c);
-                handleReset();
-              }}
-              className={`${styles.courseButton} ${
-                selectedCourse === c ? styles.courseButtonActive : ""
-              }`}
-            >
-              {c}
-            </button>
-          ))}
-        </div>
-        <button
-          type="button"
-          className={styles.actionButton}
-          onClick={() => runPitchingAction(currentPitcher, selectedCourse)}
-        >
-          PITCH!
-        </button>
-      </div>
-
-      {/* 3Dの描画 */}
       <Canvas shadows className={styles.canvas}>
         <PerspectiveCamera
           makeDefault
