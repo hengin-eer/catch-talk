@@ -48,7 +48,7 @@ Jotaiの`pitchData3DState`を監視し、新しい投球データが追加され
   - [ ] 既存のstyleプロパティ直書きからModule CSSでスタイルを管理するように修正する
   - [ ] スタイルを適切な配置・サイズに修正する
 - [ ] 投球データとの同期実装
-  - [ ] `PitchingView`で`pitchData3DState`を購読する
-  - [ ] データ更新を検知して`runPitchingAction`を発火させる`useEffect`を実装する
-  - [ ] `speaker`から`PitcherType`への変換ロジックを追加する
+  - [x] `PitchingView`で`pitchData3DState`を購読する
+  - [x] データ更新を検知して`runPitchingAction`を発火させる`useEffect`を実装する
+  - [x] `speaker`から`PitcherType`への変換ロジックを追加する
   - [ ] 実際の音声入力を行い、アニメーションが連動することを確認する
