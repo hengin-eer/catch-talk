@@ -78,7 +78,7 @@ export function useChat() {
       const pitch3D: PitchData3D = {
         uuid: packet.uuid,
         speed: ruleResult.speed,
-        type: "straight",
+        type: "null",
         is_silent: ruleResult.is_silent,
         is_fire: ruleResult.is_fire,
         ball_scale: ruleResult.ball_scale,
@@ -90,7 +90,7 @@ export function useChat() {
       const pitchChart: PitchDataChart = {
         uuid: packet.uuid,
         speed: ruleResult.speed,
-        type: "straight",
+        type: "null",
         is_silent: ruleResult.is_silent,
         is_fire: ruleResult.is_fire,
         ball_scale: ruleResult.ball_scale,

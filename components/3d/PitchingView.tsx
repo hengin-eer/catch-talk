@@ -78,6 +78,7 @@ export default function PitchingView() {
   useEffect(() => {
     const latestPitch = pitchData3D[0];
     if (!latestPitch) return;
+    if (latestPitch.type === "null") return;
     // 新しい投球データが来た場合のみ実行
     if (latestPitch.uuid !== lastPitchIdRef.current) {
       lastPitchIdRef.current = latestPitch.uuid;

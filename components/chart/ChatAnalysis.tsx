@@ -12,6 +12,7 @@ const PITCH_SYMBOLS: Record<PitchType, string> = {
   slider: ">",
   fork: "v",
   knuckle: "?",
+  null: "–",
 };
 
 export function ChatAnalysisDebug({ isSilent }: { isSilent: boolean }) {
