@@ -2,6 +2,7 @@
 
 import { useAtom } from "jotai";
 import { pitchData3DState, pitchDataChartState } from "@/state/gameData";
+import { isLoadingState } from "@/state/isLoadingState";
 import type { PitchType } from "@/types/game";
 import styles from "./ChatAnalysis.module.css";
 
@@ -16,6 +17,7 @@ const PITCH_SYMBOLS: Record<PitchType, string> = {
 export function ChatAnalysisDebug({ isSilent }: { isSilent: boolean }) {
   const [pitchData3D] = useAtom(pitchData3DState);
   const [pitchDataChart] = useAtom(pitchDataChartState);
+  const [isLoading] = useAtom(isLoadingState);
 
   // 最新の投球データ
   const latestPitch = pitchData3D[0];
@@ -23,7 +25,7 @@ export function ChatAnalysisDebug({ isSilent }: { isSilent: boolean }) {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h3>Chat Analysis Debug</h3>
+        <h3>Chat Analysis Debug {isLoading ? "<Loading..." : "<Ready"}</h3>
         <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
           {isSilent && (
             <span style={{ color: "red", fontWeight: "bold" }}>SILENT!</span>
