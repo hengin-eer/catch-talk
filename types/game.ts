@@ -24,7 +24,13 @@ export type GptBasedResult = {
   communicationStyle: number; // コミュニケーションスタイル -1.0（議論・解決志向）〜1.0（共感・受容志向）
 };
 
-export type PitchType = "straight" | "slider" | "curve" | "knuckle" | "fork";
+export type PitchType =
+  | "straight"
+  | "slider"
+  | "curve"
+  | "knuckle"
+  | "fork"
+  | "null";
 
 type BasePitchData = {
   uuid: string; // UUIDv7

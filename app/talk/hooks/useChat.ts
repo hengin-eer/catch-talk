@@ -13,6 +13,7 @@ import {
   pitchData3DState,
   pitchDataChartState,
 } from "@/state/gameData";
+import { isLoadingState } from "@/state/isLoadingState";
 import type {
   Message,
   PitchData3D,
@@ -28,6 +29,7 @@ export function useChat() {
   const [messages, setMessages] = useAtom(messagesState);
   const [, setPitchData3D] = useAtom(pitchData3DState);
   const [, setPitchDataChart] = useAtom(pitchDataChartState);
+  const [, setIsLoading] = useAtom(isLoadingState);
   const [lastActivityTime, setLastActivityTime] = useState<number | null>(null);
 
   const { isSilent: isSilenceDetected } = useSilence(
@@ -48,6 +50,7 @@ export function useChat() {
 
   const { running, setRunning, error, canStart } = useAudioProcessing(
     async (packet) => {
+      setIsLoading(true);
       setLastActivityTime(Date.now());
 
       const speed = speedCalcRef.current?.calculate(packet) ?? 0;
@@ -75,7 +78,7 @@ export function useChat() {
       const pitch3D: PitchData3D = {
         uuid: packet.uuid,
         speed: ruleResult.speed,
-        type: "straight",
+        type: "null",
         is_silent: ruleResult.is_silent,
         is_fire: ruleResult.is_fire,
         ball_scale: ruleResult.ball_scale,
@@ -87,7 +90,7 @@ export function useChat() {
       const pitchChart: PitchDataChart = {
         uuid: packet.uuid,
         speed: ruleResult.speed,
-        type: "straight",
+        type: "null",
         is_silent: ruleResult.is_silent,
         is_fire: ruleResult.is_fire,
         ball_scale: ruleResult.ball_scale,
@@ -131,6 +134,8 @@ export function useChat() {
         }
       } catch (e) {
         console.error("Analyze Chat Error:", e);
+      } finally {
+        setIsLoading(false);
       }
     },
   );
