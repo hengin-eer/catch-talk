@@ -19,6 +19,7 @@ export const PITCH_DATA: Record<
   slider: { name: "スライダー", speed: 220, color: 0xffff00 },
   fork: { name: "フォーク", speed: 220, color: 0x00ffff },
   knuckle: { name: "スネーク", speed: 220, color: 0x00ff00 },
+  null: { name: "なし", speed: 0, color: 0x808080 },
 };
 
 export const COURSE_OFFSETS: Record<string, { x: number; y: number }> = {
